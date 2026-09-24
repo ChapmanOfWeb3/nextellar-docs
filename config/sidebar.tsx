@@ -78,6 +78,7 @@ export const sidebarNav: SidebarSection[] = [
       { title: 'Flags & Options', href: '/docs/cli/flags' },
       { title: 'Scaffolding Templates', href: '/docs/cli/templates' },
       { title: 'Template Comparison', href: '/docs/cli/template-comparison' },
+      { title: 'Verified Template Matrix', href: '/docs/cli/verified-template-matrix' },
       { title: 'JavaScript DeFi Template', href: '/docs/cli/js-defi' },
       { title: 'Clean Build Artifacts', href: '/docs/cli/clean' },
       { title: 'Environment Variables Reference', href: '/docs/cli/env-vars-reference' },
@@ -110,6 +111,7 @@ export const sidebarNav: SidebarSection[] = [
       { title: 'Deployment', href: '/docs/guides/deployment' },
       { title: 'Lifecycle Tutorial', href: '/docs/guides/lifecycle-tutorial' },
       { title: 'Migration', href: '/docs/guides/migration' },
+      { title: 'Adoption Guide - Nextellar in Existing Next.js Apps', href: '/docs/guides/adoption-migration-guide' },
       {
         title: 'Transaction Lifecycle',
         href: '/docs/guides/transaction-lifecycle',
@@ -142,6 +144,10 @@ export const sidebarNav: SidebarSection[] = [
         href: '/docs/guides/soroban-index',
       },
       {
+        title: 'Soroban Contract Authoring & Deploy Tutorial',
+        href: '/docs/guides/soroban-authoring-deploy-tutorial',
+      },
+      {
         title: 'Error Handling Patterns',
         href: '/docs/guides/error-handling-patterns',
       },
@@ -152,6 +158,10 @@ export const sidebarNav: SidebarSection[] = [
       {
         title: 'Wallet UX Patterns',
         href: '/docs/guides/wallet-ux-patterns',
+      },
+      {
+        title: 'Wallet Integration Deep-Dive',
+        href: '/docs/guides/wallet-integration-deep-dive',
       },
       {
         title: 'Custom Hook Authoring',
