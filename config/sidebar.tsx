@@ -111,6 +111,7 @@ export const sidebarNav: SidebarSection[] = [
       { title: 'Deployment', href: '/docs/guides/deployment' },
       { title: 'Lifecycle Tutorial', href: '/docs/guides/lifecycle-tutorial' },
       { title: 'Migration', href: '/docs/guides/migration' },
+      { title: 'Adoption Guide - Nextellar in Existing Next.js Apps', href: '/docs/guides/adoption-migration-guide' },
       {
         title: 'Transaction Lifecycle',
         href: '/docs/guides/transaction-lifecycle',
