@@ -144,6 +144,10 @@ export const sidebarNav: SidebarSection[] = [
         href: '/docs/guides/soroban-index',
       },
       {
+        title: 'Soroban Contract Authoring & Deploy Tutorial',
+        href: '/docs/guides/soroban-authoring-deploy-tutorial',
+      },
+      {
         title: 'Error Handling Patterns',
         href: '/docs/guides/error-handling-patterns',
       },
