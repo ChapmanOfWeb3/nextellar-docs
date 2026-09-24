@@ -78,6 +78,7 @@ export const sidebarNav: SidebarSection[] = [
       { title: 'Flags & Options', href: '/docs/cli/flags' },
       { title: 'Scaffolding Templates', href: '/docs/cli/templates' },
       { title: 'Template Comparison', href: '/docs/cli/template-comparison' },
+      { title: 'Verified Template Matrix', href: '/docs/cli/verified-template-matrix' },
       { title: 'JavaScript DeFi Template', href: '/docs/cli/js-defi' },
       { title: 'Clean Build Artifacts', href: '/docs/cli/clean' },
       { title: 'Environment Variables Reference', href: '/docs/cli/env-vars-reference' },
