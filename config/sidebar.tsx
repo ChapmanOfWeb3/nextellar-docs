@@ -81,6 +81,7 @@ export const sidebarNav: SidebarSection[] = [
       { title: 'JavaScript DeFi Template', href: '/docs/cli/js-defi' },
       { title: 'Clean Build Artifacts', href: '/docs/cli/clean' },
       { title: 'Environment Variables Reference', href: '/docs/cli/env-vars-reference' },
+      { title: 'Exit Codes & CI Integration', href: '/docs/cli/exit-codes-and-ci' },
     ],
   },
 
@@ -107,6 +108,7 @@ export const sidebarNav: SidebarSection[] = [
         href: '/docs/guides/cdn-cache-invalidation',
       },
       { title: 'Deployment', href: '/docs/guides/deployment' },
+      { title: 'Lifecycle Tutorial', href: '/docs/guides/lifecycle-tutorial' },
       { title: 'Migration', href: '/docs/guides/migration' },
       {
         title: 'Transaction Lifecycle',
@@ -138,6 +140,10 @@ export const sidebarNav: SidebarSection[] = [
       {
         title: 'Soroban Guides Index',
         href: '/docs/guides/soroban-index',
+      },
+      {
+        title: 'Error Handling Patterns',
+        href: '/docs/guides/error-handling-patterns',
       },
       {
         title: 'Hook Error Handling',
