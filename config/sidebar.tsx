@@ -73,6 +73,7 @@ export const sidebarNav: SidebarSection[] = [
     pages: [
       { title: 'Overview', href: '/docs/cli/overview' },
       { title: 'Commands', href: '/docs/cli/commands' },
+      { title: 'CLI Reference', href: '/docs/cli/reference' },
       { title: 'Cheat Sheet', href: '/docs/cli/cheat-sheet' },
       { title: 'Flags & Options', href: '/docs/cli/flags' },
       { title: 'Scaffolding Templates', href: '/docs/cli/templates' },
@@ -121,6 +122,14 @@ export const sidebarNav: SidebarSection[] = [
       {
         title: 'Testing Transactions on Testnet',
         href: '/docs/guides/testing-transactions-testnet',
+      },
+      {
+        title: 'Testnet Payment Tutorial',
+        href: '/docs/guides/testnet-payment-tutorial',
+      },
+      {
+        title: 'DeFi dApp Tutorial',
+        href: '/docs/examples/defi-dapp-tutorial',
       },
       {
         title: 'Cross-Contract Calls',
