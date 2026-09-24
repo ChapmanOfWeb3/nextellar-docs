@@ -154,6 +154,10 @@ export const sidebarNav: SidebarSection[] = [
         href: '/docs/guides/wallet-ux-patterns',
       },
       {
+        title: 'Wallet Integration Deep-Dive',
+        href: '/docs/guides/wallet-integration-deep-dive',
+      },
+      {
         title: 'Custom Hook Authoring',
         href: '/docs/guides/custom-hook-authoring-playbook',
       },
