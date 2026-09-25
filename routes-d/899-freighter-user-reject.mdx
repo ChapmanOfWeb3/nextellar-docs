@@ -15,6 +15,7 @@ Handling this rejection smoothly prevents the dApp from getting stuck in an infi
 ## The Rejection Branch
 
 When a user rejects the signature request:
+
 1. `signTransaction()` or `signAuthEntry()` throws an error or returns an error response indicating cancellation (e.g., `User declined access` or `User rejected transaction`).
 2. The dApp catches this specific exception.
 3. Reset the transaction state to `idle`.
@@ -38,11 +39,11 @@ Request Signature (signTransaction)
 
 Avoid harsh red alerts or technical stack traces for intentional user cancellations. Use neutral or informational messaging:
 
-| Context | Good UX Copy | Poor Copy |
-| --- | --- | --- |
-| **Transaction Sign** | "Transaction was cancelled in your wallet. No changes were made." | "Error: Transaction signature failed: User rejected" |
-| **Connection Request** | "Wallet connection request was cancelled." | "Fatal: Access Denied (403)" |
-| **Action Options** | Provide a "Try Again" or "Review Details" button | Leave user on a broken or blank screen |
+| Context                | Good UX Copy                                                      | Poor Copy                                            |
+| ---------------------- | ----------------------------------------------------------------- | ---------------------------------------------------- |
+| **Transaction Sign**   | "Transaction was cancelled in your wallet. No changes were made." | "Error: Transaction signature failed: User rejected" |
+| **Connection Request** | "Wallet connection request was cancelled."                        | "Fatal: Access Denied (403)"                         |
+| **Action Options**     | Provide a "Try Again" or "Review Details" button                  | Leave user on a broken or blank screen               |
 
 ---
 
@@ -51,7 +52,10 @@ Avoid harsh red alerts or technical stack traces for intentional user cancellati
 ```typescript
 import { signTransaction } from '@stellar/freighter-api';
 
-export async function handleSignTransaction(xdr: string, networkPassphrase: string) {
+export async function handleSignTransaction(
+  xdr: string,
+  networkPassphrase: string
+) {
   try {
     const signedXdr = await signTransaction(xdr, {
       networkPassphrase,
@@ -76,7 +80,8 @@ export async function handleSignTransaction(xdr: string, networkPassphrase: stri
       return {
         success: false,
         isCancelled: true,
-        userMessage: 'Transaction cancelled in Freighter. No funds were transferred.',
+        userMessage:
+          'Transaction cancelled in Freighter. No funds were transferred.',
       };
     }
 
@@ -84,7 +89,8 @@ export async function handleSignTransaction(xdr: string, networkPassphrase: stri
     return {
       success: false,
       isCancelled: false,
-      userMessage: error?.message || 'Failed to sign transaction. Please try again.',
+      userMessage:
+        error?.message || 'Failed to sign transaction. Please try again.',
     };
   }
 }

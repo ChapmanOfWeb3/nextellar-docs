@@ -12,11 +12,11 @@ Freighter is a browser extension wallet, so "offline" can mean three different t
 
 ## The Three Failure States
 
-| State | Cause | Typical symptom |
-|---|---|---|
-| Device offline | No internet connection | Horizon fetches fail alongside wallet calls |
-| Wallet unavailable | Extension disabled, removed, or not injected | `window.freighter` is undefined / API throws |
-| Wallet unresponsive | Extension loaded but stalled (background update, suspended tab) | Promise from the API never settles |
+| State               | Cause                                                           | Typical symptom                              |
+| ------------------- | --------------------------------------------------------------- | -------------------------------------------- |
+| Device offline      | No internet connection                                          | Horizon fetches fail alongside wallet calls  |
+| Wallet unavailable  | Extension disabled, removed, or not injected                    | `window.freighter` is undefined / API throws |
+| Wallet unresponsive | Extension loaded but stalled (background update, suspended tab) | Promise from the API never settles           |
 
 Each state needs its own detection strategy and its own message.
 
@@ -116,10 +116,7 @@ export function useWalletStatus() {
         const available = await Promise.race([
           isConnected(),
           new Promise<never>((_, reject) =>
-            setTimeout(
-              () => reject(new Error('timeout')),
-              REQUEST_TIMEOUT_MS
-            )
+            setTimeout(() => reject(new Error('timeout')), REQUEST_TIMEOUT_MS)
           ),
         ]);
 
@@ -128,9 +125,7 @@ export function useWalletStatus() {
         setStatus('ready');
       } catch (err) {
         if (!cancelled) {
-          setStatus(
-            err.message === 'timeout' ? 'unresponsive' : 'unavailable'
-          );
+          setStatus(err.message === 'timeout' ? 'unresponsive' : 'unavailable');
         }
       }
     }
@@ -159,12 +154,12 @@ export function useWalletStatus() {
 
 Map every detected state to a short, actionable message. Name the fix, don't just describe the failure:
 
-| State | Suggested copy |
-|---|---|
-| `device-offline` | "You're offline. Check your internet connection — your wallet will reconnect automatically." |
-| `unavailable` | "We can't reach Freighter. Make sure the extension is installed and enabled, then refresh this page." |
-| `unresponsive` | "Freighter isn't responding. Try reopening the extension — your transaction wasn't submitted." |
-| Recovered (`online`) | "Connection restored. You can continue." |
+| State                | Suggested copy                                                                                        |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| `device-offline`     | "You're offline. Check your internet connection — your wallet will reconnect automatically."          |
+| `unavailable`        | "We can't reach Freighter. Make sure the extension is installed and enabled, then refresh this page." |
+| `unresponsive`       | "Freighter isn't responding. Try reopening the extension — your transaction wasn't submitted."        |
+| Recovered (`online`) | "Connection restored. You can continue."                                                              |
 
 Guidelines:
 
@@ -174,11 +169,16 @@ Guidelines:
 - **Announce changes accessibly.** Render the banner in a `role="status"` region so screen readers hear transitions.
 
 ```tsx
-{status !== 'ready' && status !== 'checking' && (
-  <div role="status" className="rounded-md bg-amber-50 p-3 text-sm text-amber-900">
-    {MESSAGES[status]}
-  </div>
-)}
+{
+  status !== 'ready' && status !== 'checking' && (
+    <div
+      role="status"
+      className="rounded-md bg-amber-50 p-3 text-sm text-amber-900"
+    >
+      {MESSAGES[status]}
+    </div>
+  );
+}
 ```
 
 ---

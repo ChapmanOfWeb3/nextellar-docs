@@ -10,12 +10,12 @@ A status page gives your users a single URL to check when something feels wrong.
 
 ## What You Need to Monitor
 
-| Signal | What it tells you |
-|--------|-------------------|
-| Horizon `/health` | The Horizon server your frontend queries is reachable and healthy |
-| Soroban RPC `/health` | The Soroban RPC node can accept smart contract calls |
+| Signal                      | What it tells you                                                                |
+| --------------------------- | -------------------------------------------------------------------------------- |
+| Horizon `/health`           | The Horizon server your frontend queries is reachable and healthy                |
+| Soroban RPC `/health`       | The Soroban RPC node can accept smart contract calls                             |
 | Smart contract reachability | A lightweight simulation call to your deployed contract returns a valid response |
-| Your own backend (if any) | Your API layer is up and accepting requests |
+| Your own backend (if any)   | Your API layer is up and accepting requests                                      |
 
 ## Uptime Signals in Detail
 
@@ -79,14 +79,18 @@ The following example builds a minimal status page as a Next.js API route and a 
 ```ts
 import { NextResponse } from 'next/server';
 
-const HORIZON_URL = process.env.NEXT_PUBLIC_HORIZON_URL ?? 'https://horizon.stellar.org';
-const SOROBAN_URL = process.env.NEXT_PUBLIC_SOROBAN_RPC ?? 'https://soroban-testnet.stellar.org';
+const HORIZON_URL =
+  process.env.NEXT_PUBLIC_HORIZON_URL ?? 'https://horizon.stellar.org';
+const SOROBAN_URL =
+  process.env.NEXT_PUBLIC_SOROBAN_RPC ?? 'https://soroban-testnet.stellar.org';
 
 type SignalStatus = 'healthy' | 'degraded' | 'down';
 
 async function checkHorizon(): Promise<SignalStatus> {
   try {
-    const res = await fetch(`${HORIZON_URL}/health`, { next: { revalidate: 0 } });
+    const res = await fetch(`${HORIZON_URL}/health`, {
+      next: { revalidate: 0 },
+    });
     const json = await res.json();
     return json?.status === 'healthy' ? 'healthy' : 'degraded';
   } catch {
@@ -110,7 +114,10 @@ async function checkSorobanRpc(): Promise<SignalStatus> {
 }
 
 export async function GET() {
-  const [horizon, soroban] = await Promise.all([checkHorizon(), checkSorobanRpc()]);
+  const [horizon, soroban] = await Promise.all([
+    checkHorizon(),
+    checkSorobanRpc(),
+  ]);
 
   const overall: SignalStatus =
     horizon === 'healthy' && soroban === 'healthy'
@@ -211,8 +218,11 @@ export function MaintenanceBanner() {
   return (
     <div className="bg-yellow-100 px-4 py-2 text-center text-sm text-yellow-800">
       Scheduled maintenance on{' '}
-      {end.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}. Some features
-      may be temporarily unavailable.
+      {end.toLocaleString(undefined, {
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      })}
+      . Some features may be temporarily unavailable.
     </div>
   );
 }

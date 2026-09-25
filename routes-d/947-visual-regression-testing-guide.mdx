@@ -29,7 +29,7 @@ Wallet interfaces have unique constraints:
 - **Modal and overlay positioning**: A confirmation dialog that renders off-screen on small viewports.
 - **Icon and logo rendering**: SVG changes that distort wallet provider logos or asset icons.
 
-Unit tests verify *logic*. Visual tests verify *what the user sees*.
+Unit tests verify _logic_. Visual tests verify _what the user sees_.
 
 ---
 
@@ -38,12 +38,14 @@ Unit tests verify *logic*. Visual tests verify *what the user sees*.
 ### Option A: Playwright with Built-in Screenshot Comparison
 
 **Pros**:
+
 - No external service dependency.
 - Fast local execution.
 - Full control over masking and thresholds.
 - Works offline.
 
 **Cons**:
+
 - Baselines stored in your repo (can bloat Git history).
 - No hosted dashboard for visual diffs.
 
@@ -52,11 +54,13 @@ Unit tests verify *logic*. Visual tests verify *what the user sees*.
 ### Option B: Percy (by BrowserStack)
 
 **Pros**:
+
 - Hosted dashboard with side-by-side diffs.
 - Parallel rendering across browsers and viewports.
 - Commit-level snapshots for PR reviews.
 
 **Cons**:
+
 - Paid service (free tier available).
 - Network dependency (slower in CI).
 
@@ -65,11 +69,13 @@ Unit tests verify *logic*. Visual tests verify *what the user sees*.
 ### Option C: Chromatic (by Storybook)
 
 **Pros**:
+
 - Native Storybook integration.
 - Component-level visual testing (test wallet components in isolation).
 - UI review workflow for designers.
 
 **Cons**:
+
 - Requires Storybook setup.
 - Paid service (free tier for open source).
 
@@ -124,11 +130,13 @@ The `-chromium-linux` suffix is appended automatically based on the test project
 ### Baseline Storage
 
 **Option 1: Store in Git** (recommended for small projects)
+
 - Commit baselines to your repo.
 - Pros: no external dependency, full history.
 - Cons: bloats repo size (use Git LFS if baselines exceed 10 MB).
 
 **Option 2: Store in cloud storage**
+
 - Upload baselines to S3 or GCS, fetch in CI.
 - Pros: keeps repo lean.
 - Cons: adds pipeline complexity.
@@ -203,6 +211,7 @@ jobs:
 ```
 
 This workflow:
+
 - Runs visual tests on every PR.
 - Uploads diff images as artifacts if tests fail.
 - Posts a comment on the PR with a link to download diffs.
@@ -275,12 +284,12 @@ Masked areas are filled with a solid color in the screenshot, so they never diff
 
 **Masking strategy**:
 
-| Mask (dynamic, never deterministic) | Do NOT mask (what you are testing) |
-| --- | --- |
-| Timestamps and "last synced" labels | Account balances and amounts |
-| Transaction hashes and nonces | Asset codes and icons |
-| Live price feeds | Button labels and CTAs |
-| Randomized avatars or placeholders | Form fields and validation messages |
+| Mask (dynamic, never deterministic) | Do NOT mask (what you are testing)  |
+| ----------------------------------- | ----------------------------------- |
+| Timestamps and "last synced" labels | Account balances and amounts        |
+| Transaction hashes and nonces       | Asset codes and icons               |
+| Live price feeds                    | Button labels and CTAs              |
+| Randomized avatars or placeholders  | Form fields and validation messages |
 
 ### 5.4 Disable Font Anti-Aliasing Differences
 
@@ -306,16 +315,16 @@ Small pixel differences (1-2 pixels due to rounding) should not fail tests. Play
 ```typescript
 await expect(page).toHaveScreenshot('send-form.png', {
   maxDiffPixels: 100, // Allow up to 100 pixels to differ in total
-  threshold: 0.2,     // Tolerate minor per-pixel color differences
+  threshold: 0.2, // Tolerate minor per-pixel color differences
 });
 ```
 
 **Recommended starting points**:
 
-| Layout | `maxDiffPixels` | Notes |
-| --- | --- | --- |
-| Desktop (1280x720) | 50-100 | Larger surface, more anti-aliased text |
-| Mobile (375x667) | 20-50 | Smaller surface area |
+| Layout             | `maxDiffPixels` | Notes                                  |
+| ------------------ | --------------- | -------------------------------------- |
+| Desktop (1280x720) | 50-100          | Larger surface, more anti-aliased text |
+| Mobile (375x667)   | 20-50           | Smaller surface area                   |
 
 Tune these per test: start strict (`maxDiffPixels: 0`) and loosen only where flakiness is proven, not preemptively.
 
@@ -381,17 +390,17 @@ test.describe('Wallet Dashboard', () => {
   test('empty state', async ({ page }) => {
     await page.goto('http://localhost:3000/wallet');
     await page.waitForSelector('[data-testid="wallet-dashboard"]');
-    
+
     await expect(page).toHaveScreenshot('dashboard-empty.png');
   });
 
   test('with account balances', async ({ page }) => {
     await mockWalletData(page);
     await page.goto('http://localhost:3000/wallet');
-    
+
     // Wait for balances to load
     await page.waitForSelector('[data-testid="balance-xlm"]');
-    
+
     // Mask dynamic timestamp
     await expect(page).toHaveScreenshot('dashboard-with-balances.png', {
       mask: [page.locator('[data-testid="last-synced"]')],
@@ -404,7 +413,7 @@ test.describe('Wallet Dashboard', () => {
     await mockWalletData(page);
     await page.goto('http://localhost:3000/wallet');
     await page.waitForSelector('[data-testid="balance-xlm"]');
-    
+
     await expect(page).toHaveScreenshot('dashboard-mobile.png', {
       mask: [page.locator('[data-testid="last-synced"]')],
       maxDiffPixels: 30,
@@ -417,47 +426,47 @@ test.describe('Send Flow', () => {
     await mockWalletData(page);
     await page.goto('http://localhost:3000/wallet/send');
     await page.waitForSelector('[data-testid="send-form"]');
-    
+
     await expect(page).toHaveScreenshot('send-form-empty.png');
   });
 
   test('send form - filled', async ({ page }) => {
     await mockWalletData(page);
     await page.goto('http://localhost:3000/wallet/send');
-    
+
     // Fill form
     await page.fill('[data-testid="recipient-input"]', 'GDEF...ABC');
     await page.fill('[data-testid="amount-input"]', '100');
     await page.selectOption('[data-testid="asset-select"]', 'XLM');
-    
+
     await expect(page).toHaveScreenshot('send-form-filled.png');
   });
 
   test('send form - validation error', async ({ page }) => {
     await mockWalletData(page);
     await page.goto('http://localhost:3000/wallet/send');
-    
+
     // Fill invalid amount
     await page.fill('[data-testid="amount-input"]', '9999999');
     await page.click('[data-testid="send-button"]');
-    
+
     // Wait for error message
     await page.waitForSelector('[data-testid="error-insufficient-balance"]');
-    
+
     await expect(page).toHaveScreenshot('send-form-error.png');
   });
 
   test('confirmation modal', async ({ page }) => {
     await mockWalletData(page);
     await page.goto('http://localhost:3000/wallet/send');
-    
+
     await page.fill('[data-testid="recipient-input"]', 'GDEF...ABC');
     await page.fill('[data-testid="amount-input"]', '100');
     await page.click('[data-testid="send-button"]');
-    
+
     // Wait for modal
     await page.waitForSelector('[data-testid="confirm-modal"]');
-    
+
     // Mask dynamic fee estimate (can vary)
     await expect(page).toHaveScreenshot('send-confirm-modal.png', {
       mask: [page.locator('[data-testid="estimated-fee"]')],
@@ -501,7 +510,7 @@ test.describe('Transaction History', () => {
 
     await page.goto('http://localhost:3000/wallet/transactions');
     await page.waitForSelector('[data-testid="transaction-list"]');
-    
+
     // Mask transaction IDs and timestamps (dynamic)
     await expect(page).toHaveScreenshot('transaction-history.png', {
       mask: [
@@ -523,7 +532,7 @@ test.describe('Transaction History', () => {
 
     await page.goto('http://localhost:3000/wallet/transactions');
     await page.waitForSelector('[data-testid="empty-state"]');
-    
+
     await expect(page).toHaveScreenshot('transaction-history-empty.png');
   });
 });
@@ -532,11 +541,11 @@ test.describe('Asset Selection', () => {
   test('asset dropdown - open', async ({ page }) => {
     await mockWalletData(page);
     await page.goto('http://localhost:3000/wallet/send');
-    
+
     // Open asset dropdown
     await page.click('[data-testid="asset-select"]');
     await page.waitForSelector('[data-testid="asset-option-XLM"]');
-    
+
     await expect(page).toHaveScreenshot('asset-dropdown-open.png');
   });
 
@@ -561,10 +570,10 @@ test.describe('Asset Selection', () => {
 
     await page.goto('http://localhost:3000/wallet');
     await page.waitForSelector('[data-testid="balance-AQUA"]');
-    
+
     // Wait for asset logo to load
     await page.waitForSelector('[data-testid="asset-logo-AQUA"]');
-    
+
     await expect(page).toHaveScreenshot('asset-with-logo.png');
   });
 });
@@ -590,10 +599,10 @@ export default defineConfig({
   // Individual tests can override any of these per call.
   expect: {
     toHaveScreenshot: {
-      animations: 'disabled',   // Fast-forward CSS animations/transitions
-      caret: 'hide',            // Hide the blinking text caret
-      maxDiffPixels: 100,       // Allow up to 100 differing pixels
-      threshold: 0.2,           // Per-pixel YIQ color tolerance (0-1)
+      animations: 'disabled', // Fast-forward CSS animations/transitions
+      caret: 'hide', // Hide the blinking text caret
+      maxDiffPixels: 100, // Allow up to 100 differing pixels
+      threshold: 0.2, // Per-pixel YIQ color tolerance (0-1)
     },
   },
 
@@ -606,7 +615,7 @@ export default defineConfig({
   projects: [
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
         deviceScaleFactor: 1,
@@ -614,7 +623,7 @@ export default defineConfig({
     },
     {
       name: 'mobile-chrome',
-      use: { 
+      use: {
         ...devices['Pixel 5'],
         deviceScaleFactor: 1, // Override device default
       },
@@ -683,7 +692,7 @@ jobs:
   visual-tests:
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -814,7 +823,7 @@ for (const viewport of viewports) {
     await page.setViewportSize(viewport);
     await page.goto('http://localhost:3000/wallet');
     await page.waitForSelector('[data-testid="wallet-dashboard"]');
-    
+
     await expect(page).toHaveScreenshot(`dashboard-${viewport.name}.png`, {
       maxDiffPixels: 50,
     });
@@ -855,9 +864,11 @@ Then run Playwright against Storybook:
 
 ```typescript
 test('WalletBalance component', async ({ page }) => {
-  await page.goto('http://localhost:6006/iframe.html?id=walletbalance--default');
+  await page.goto(
+    'http://localhost:6006/iframe.html?id=walletbalance--default'
+  );
   await page.waitForSelector('[data-testid="wallet-balance"]');
-  
+
   await expect(page).toHaveScreenshot('wallet-balance-component.png');
 });
 ```
@@ -878,7 +889,7 @@ import percySnapshot from '@percy/playwright';
 test('dashboard with Percy', async ({ page }) => {
   await page.goto('http://localhost:3000/wallet');
   await page.waitForSelector('[data-testid="wallet-dashboard"]');
-  
+
   // Percy snapshot (uploaded to Percy dashboard)
   await percySnapshot(page, 'Wallet Dashboard');
 });
@@ -905,10 +916,10 @@ for (const theme of themes) {
     await page.addInitScript((theme) => {
       localStorage.setItem('theme', theme);
     }, theme);
-    
+
     await page.goto('http://localhost:3000/wallet');
     await page.waitForSelector('[data-testid="wallet-dashboard"]');
-    
+
     await expect(page).toHaveScreenshot(`dashboard-${theme}.png`);
   });
 }
@@ -971,6 +982,7 @@ body {
 **Cause**: Too many high-resolution screenshots.
 
 **Solution**:
+
 1. Use Git LFS for `*-snapshots/` directories.
 2. Test only critical paths (no need for every button state).
 3. Compress PNGs with `pngquant` in CI.

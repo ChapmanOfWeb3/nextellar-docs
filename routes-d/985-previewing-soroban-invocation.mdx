@@ -13,7 +13,12 @@ Before signing and submitting a Soroban contract invocation, simulate it against
 Assemble the invocation as you normally would, with a placeholder fee and no footprint yet — simulation fills both in:
 
 ```typescript
-import { Contract, TransactionBuilder, Networks, BASE_FEE } from '@stellar/stellar-sdk';
+import {
+  Contract,
+  TransactionBuilder,
+  Networks,
+  BASE_FEE,
+} from '@stellar/stellar-sdk';
 
 const contract = new Contract(contractId);
 

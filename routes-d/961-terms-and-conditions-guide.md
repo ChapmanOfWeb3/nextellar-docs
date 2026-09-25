@@ -17,11 +17,13 @@ Working draft for the docs change requested in issue #961.
 ## Sections
 
 ### Why dApps Need Custom Terms
+
 - Smart contract immutability implications
 - Wallet-based identity vs. account-based identity
 - Regulatory considerations for token issuers
 
 ### Common T&C Sections
+
 - Acceptance of terms
 - Description of service
 - Eligibility and KYC
@@ -29,6 +31,7 @@ Working draft for the docs change requested in issue #961.
 - Dispute resolution and governing law
 
 ### When to Adapt the Template
+
 - Different jurisdictions
 - Securities vs. utility tokens
 - Custodial vs. non-custodial flows

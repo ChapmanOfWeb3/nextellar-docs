@@ -14,13 +14,13 @@ Wallet forms (send amount, destination address, memo) fail in specific ways: inv
 
 Set these on every validated wallet input:
 
-| Attribute | Where | Value |
-|---|---|---|
-| `aria-invalid` | The input | `"true"` when validation fails, removed/`"false"` otherwise |
-| `aria-describedby` | The input | ID of the error message element (only while erroring) |
-| `role="alert"` | The error message | Announces the error immediately when it appears |
+| Attribute               | Where               | Value                                                            |
+| ----------------------- | ------------------- | ---------------------------------------------------------------- |
+| `aria-invalid`          | The input           | `"true"` when validation fails, removed/`"false"` otherwise      |
+| `aria-describedby`      | The input           | ID of the error message element (only while erroring)            |
+| `role="alert"`          | The error message   | Announces the error immediately when it appears                  |
 | `aria-live="assertive"` | The error container | Alternative to `role="alert"` for regions that update repeatedly |
-| `aria-required` | The input | `"true"` on mandatory fields |
+| `aria-required`         | The input           | `"true"` on mandatory fields                                     |
 
 Key behaviors:
 
@@ -51,7 +51,9 @@ export function SendForm() {
   function validate(value: string) {
     if (!value) setError('Enter the destination address.');
     else if (!ADDRESS_RE.test(value))
-      setError('That doesn\u2019t look like a Stellar address. Addresses start with G and are 56 characters long.');
+      setError(
+        'That doesn\u2019t look like a Stellar address. Addresses start with G and are 56 characters long.'
+      );
     else setError(null);
   }
 
@@ -93,15 +95,15 @@ The `Input` component's `isError` prop handles the visual state (`docs/component
 
 Good error copy says **what happened**, **why**, and **what to do** — in that order, under ~100 characters:
 
-| Scenario | Weak copy | Suggested copy |
-|---|---|---|
-| Empty destination | "Invalid input" | "Enter the destination address." |
-| Malformed address | "Bad address" | "Stellar addresses start with G and are 56 characters long." |
-| Sending to self | — | "This is your own address. Choose a different recipient." |
-| Amount exceeds balance | "Insufficient funds" | "You have 12.4 XLM available. Enter a smaller amount." |
-| Below existence minimum | "Too low" | "Accounts must hold at least 1 XLM. Send 1 XLM or more." |
-| Wallet rejected signing | "Error" | "Signing was cancelled in Freighter. No funds were sent — try again when you're ready." |
-| Network failure during submit | "Submission failed" | "We couldn't reach the network. Your funds are untouched — retry the payment." |
+| Scenario                      | Weak copy            | Suggested copy                                                                          |
+| ----------------------------- | -------------------- | --------------------------------------------------------------------------------------- |
+| Empty destination             | "Invalid input"      | "Enter the destination address."                                                        |
+| Malformed address             | "Bad address"        | "Stellar addresses start with G and are 56 characters long."                            |
+| Sending to self               | —                    | "This is your own address. Choose a different recipient."                               |
+| Amount exceeds balance        | "Insufficient funds" | "You have 12.4 XLM available. Enter a smaller amount."                                  |
+| Below existence minimum       | "Too low"            | "Accounts must hold at least 1 XLM. Send 1 XLM or more."                                |
+| Wallet rejected signing       | "Error"              | "Signing was cancelled in Freighter. No funds were sent — try again when you're ready." |
+| Network failure during submit | "Submission failed"  | "We couldn't reach the network. Your funds are untouched — retry the payment."          |
 
 Guidelines:
 

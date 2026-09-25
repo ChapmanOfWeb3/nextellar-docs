@@ -14,12 +14,12 @@ Fetching account data (public key, XLM balance, asset list) over Horizon takes a
 
 Match each skeleton to the shape of the data it stands in for:
 
-| Data | Placeholder shape |
-|---|---|
-| Public key | Short pill (~`w-40 h-4`) — truncated G-address line |
-| Native XLM balance | Large block (`w-32 h-8`) next to a small label bar |
-| Asset row | Horizontal row: circle icon (`h-9 w-9 rounded-full`) + two stacked bars |
-| Transaction row | Two-line row: wide bar on top, narrow muted bar below |
+| Data               | Placeholder shape                                                       |
+| ------------------ | ----------------------------------------------------------------------- |
+| Public key         | Short pill (~`w-40 h-4`) — truncated G-address line                     |
+| Native XLM balance | Large block (`w-32 h-8`) next to a small label bar                      |
+| Asset row          | Horizontal row: circle icon (`h-9 w-9 rounded-full`) + two stacked bars |
+| Transaction row    | Two-line row: wide bar on top, narrow muted bar below                   |
 
 Rules of thumb:
 
@@ -89,11 +89,7 @@ import { useStellarBalances } from '@/hooks/useStellarBalances';
 
 function BalanceCardSkeleton() {
   return (
-    <div
-      aria-hidden="true"
-      aria-busy="true"
-      className="rounded-xl border p-4"
-    >
+    <div aria-hidden="true" aria-busy="true" className="rounded-xl border p-4">
       <div className="h-3 w-20 animate-pulse rounded bg-muted" />
       <div className="mt-2 h-8 w-32 animate-pulse rounded bg-muted" />
       <div className="mt-4 space-y-3">
@@ -112,7 +108,10 @@ export function BalanceCard({ publicKey }: { publicKey: string }) {
 
   if (error) {
     return (
-      <div role="alert" className="rounded-xl border border-destructive/30 p-4 text-sm">
+      <div
+        role="alert"
+        className="rounded-xl border border-destructive/30 p-4 text-sm"
+      >
         <p>We couldn't load your balances. Your funds are safe.</p>
         <button onClick={refresh} className="mt-2 font-medium underline">
           Try again
@@ -122,9 +121,7 @@ export function BalanceCard({ publicKey }: { publicKey: string }) {
   }
 
   return (
-    <div className="rounded-xl border p-4">
-      {/* Render real balances */}
-    </div>
+    <div className="rounded-xl border p-4">{/* Render real balances */}</div>
   );
 }
 ```

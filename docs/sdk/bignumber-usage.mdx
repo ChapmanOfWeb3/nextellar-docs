@@ -22,12 +22,12 @@ The `@stellar/stellar-sdk` relies on `BigNumber.js` to preserve mathematical pre
 
 The SDK utilizes `BigNumber` across several core types and Horizon response objects:
 
-| Area | Field / Type | Description |
-| --- | --- | --- |
-| **Operation Amounts** | `Operation.payment({ amount })` | High-precision token/XLM transfer amounts |
-| **DEX Offers** | `Price.n`, `Price.d`, `price` | Price numerator, denominator, and computed ratio |
-| **Orderbook Amounts** | `OfferRecord.amount`, `buying.amount` | Order amounts and liquidity depth values |
-| **Soroban Numbers** | `i128`, `u128`, `i256`, `u256` | Large contract integer parameters and return values |
+| Area                  | Field / Type                          | Description                                         |
+| --------------------- | ------------------------------------- | --------------------------------------------------- |
+| **Operation Amounts** | `Operation.payment({ amount })`       | High-precision token/XLM transfer amounts           |
+| **DEX Offers**        | `Price.n`, `Price.d`, `price`         | Price numerator, denominator, and computed ratio    |
+| **Orderbook Amounts** | `OfferRecord.amount`, `buying.amount` | Order amounts and liquidity depth values            |
+| **Soroban Numbers**   | `i128`, `u128`, `i256`, `u256`        | Large contract integer parameters and return values |
 
 ---
 

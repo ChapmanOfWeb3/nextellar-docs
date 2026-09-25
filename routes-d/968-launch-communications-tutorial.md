@@ -17,6 +17,7 @@ Working draft for the docs change requested in issue #968.
 ## Sections
 
 ### Announcement Channels
+
 - Stellar Community Forum / Discord
 - Twitter/X, Farcaster
 - Email list
@@ -24,16 +25,19 @@ Working draft for the docs change requested in issue #968.
 - Product Hunt / Hacker News
 
 ### Messaging Cadence
+
 - T-4 weeks: teaser / waitlist
 - T-1 week: feature preview
 - Launch day: main announcement
 - T+1 week: lessons-learned post
 
 ### Copy Templates
+
 - Waitlist tweet
 - Discord announcement
 - Launch blog post outline
 
 ## Acceptance Criteria
+
 - Builds with `pnpm build:content` without errors
 - Internal links pass `pnpm check:links`

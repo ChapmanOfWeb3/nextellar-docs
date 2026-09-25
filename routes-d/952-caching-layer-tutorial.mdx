@@ -42,19 +42,21 @@ Data expires after a fixed duration. Simple and predictable.
 
 ```ts
 const CACHE_TTL = {
-  balances: 10_000,      // 10 seconds — frequently changing
-  account: 30_000,       // 30 seconds — moderate volatility
-  transactions: 60_000,  // 1 minute — historical data rarely changes
-  assets: 300_000,       // 5 minutes — static metadata
+  balances: 10_000, // 10 seconds — frequently changing
+  account: 30_000, // 30 seconds — moderate volatility
+  transactions: 60_000, // 1 minute — historical data rarely changes
+  assets: 300_000, // 5 minutes — static metadata
 };
 ```
 
 **Pros**:
+
 - Easy to reason about
 - No complex dependency tracking
 - Works for all data types
 
 **Cons**:
+
 - May serve stale data if changes happen mid-TTL
 - May refresh unnecessarily if data hasn't changed
 
@@ -67,24 +69,28 @@ Invalidate when a known event occurs (user submits transaction, receives payment
 ```ts
 async function submitPayment(tx: Transaction) {
   const result = await server.submitTransaction(tx);
-  
+
   if (result.successful) {
     // Invalidate caches that this transaction affects
     queryClient.invalidateQueries({ queryKey: ['balances', sourceAccount] });
     queryClient.invalidateQueries({ queryKey: ['balances', destination] });
-    queryClient.invalidateQueries({ queryKey: ['transactions', sourceAccount] });
+    queryClient.invalidateQueries({
+      queryKey: ['transactions', sourceAccount],
+    });
   }
-  
+
   return result;
 }
 ```
 
 **Pros**:
+
 - Immediate UI updates after actions
 - No waiting for TTL expiration
 - Precise control over what gets refreshed
 
 **Cons**:
+
 - Doesn't catch external changes (other users' transactions)
 - Requires manual tracking of dependencies
 - Complex for multi-hop effects
@@ -99,17 +105,19 @@ Keep data fresh with periodic background checks while serving from cache.
 useQuery({
   queryKey: ['openOrders', accountId],
   queryFn: () => fetchOpenOrders(accountId),
-  staleTime: 5_000,        // Consider fresh for 5s
+  staleTime: 5_000, // Consider fresh for 5s
   refetchInterval: 10_000, // Poll every 10s in background
 });
 ```
 
 **Pros**:
+
 - Catches external changes automatically
 - Balances freshness and API efficiency
 - User always sees up-to-date data
 
 **Cons**:
+
 - More API calls than pure TTL
 - Polling continues even when data rarely changes
 - Need to pause polling when tab is hidden
@@ -160,11 +168,13 @@ export function useAccountInvalidationStream(accountId: string | null) {
 **Best for**: Accounts displayed persistently where external changes matter (wallet dashboards)
 
 **Pros**:
+
 - Push-based — reacts to external changes with zero wasted requests
 - Aligned with actual ledger close events rather than arbitrary intervals
 - Complements TTL: streams trigger invalidation, TTL remains the safety net
 
 **Cons**:
+
 - Browsers limit concurrent SSE connections (six per domain on HTTP/1.1)
 - Requires cleanup on unmount and reconnection handling on network drops
 - Not suitable for server-side rendering without extra plumbing
@@ -175,14 +185,14 @@ export function useAccountInvalidationStream(accountId: string | null) {
 
 Staleness bounds define how old data can be before it must be refreshed. Different data types have different tolerance for staleness:
 
-| Data Type | Staleness Bound | Rationale |
-|-----------|----------------|-----------|
-| Account balances | 5-10 seconds | Users expect current balance, but sub-second precision rarely matters |
-| Transaction history | 30-60 seconds | Historical data doesn't change; recent transactions settle within seconds |
-| Open offers | 5 seconds | Order book changes frequently in active markets |
-| Asset metadata | 5 minutes | Issuer-defined properties rarely change |
-| Network info | 30 seconds | Ledger time and fee stats are useful but not critical |
-| Account details (signers, thresholds) | 1 minute | Configuration changes are rare |
+| Data Type                             | Staleness Bound | Rationale                                                                 |
+| ------------------------------------- | --------------- | ------------------------------------------------------------------------- |
+| Account balances                      | 5-10 seconds    | Users expect current balance, but sub-second precision rarely matters     |
+| Transaction history                   | 30-60 seconds   | Historical data doesn't change; recent transactions settle within seconds |
+| Open offers                           | 5 seconds       | Order book changes frequently in active markets                           |
+| Asset metadata                        | 5 minutes       | Issuer-defined properties rarely change                                   |
+| Network info                          | 30 seconds      | Ledger time and fee stats are useful but not critical                     |
+| Account details (signers, thresholds) | 1 minute        | Configuration changes are rare                                            |
 
 Configure staleness based on **user impact**:
 
@@ -223,9 +233,9 @@ export function Providers({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 10_000,        // Default: 10s staleness
-            gcTime: 300_000,          // Keep in cache for 5 minutes
-            retry: 2,                 // Retry failed requests twice
+            staleTime: 10_000, // Default: 10s staleness
+            gcTime: 300_000, // Keep in cache for 5 minutes
+            retry: 2, // Retry failed requests twice
             refetchOnWindowFocus: true, // Refresh when user returns to tab
           },
         },
@@ -233,9 +243,7 @@ export function Providers({ children }: { children: ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 ```
@@ -262,7 +270,7 @@ export async function fetchAccountBalances(
   accountId: string
 ): Promise<StellarBalance[]> {
   const account = await horizonServer.loadAccount(accountId);
-  
+
   return account.balances.map((b) => {
     if (b.asset_type === 'native') {
       return {
@@ -273,7 +281,7 @@ export async function fetchAccountBalances(
         isNative: true,
       };
     }
-    
+
     const assetBalance = b as Horizon.HorizonApi.BalanceLineAsset;
     return {
       assetCode: assetBalance.asset_code,
@@ -295,7 +303,7 @@ export async function fetchAccountTransactions(
     .limit(limit)
     .order('desc')
     .call();
-  
+
   return transactions.records;
 }
 
@@ -331,7 +339,8 @@ export const stellarKeys = {
   accounts: () => [...stellarKeys.all, 'accounts'] as const,
   account: (id: string) => [...stellarKeys.accounts(), id] as const,
   balances: (id: string) => [...stellarKeys.account(id), 'balances'] as const,
-  transactions: (id: string) => [...stellarKeys.account(id), 'transactions'] as const,
+  transactions: (id: string) =>
+    [...stellarKeys.account(id), 'transactions'] as const,
   details: (id: string) => [...stellarKeys.account(id), 'details'] as const,
 };
 
@@ -343,8 +352,8 @@ export function useAccountBalances(accountId: string | null) {
     queryKey: stellarKeys.balances(accountId!),
     queryFn: () => fetchAccountBalances(accountId!),
     enabled: !!accountId,
-    staleTime: 10_000,     // Consider fresh for 10 seconds
-    gcTime: 300_000,       // Keep in cache for 5 minutes
+    staleTime: 10_000, // Consider fresh for 10 seconds
+    gcTime: 300_000, // Keep in cache for 5 minutes
     retry: 2,
   });
 }
@@ -352,16 +361,13 @@ export function useAccountBalances(accountId: string | null) {
 /**
  * Fetch and cache transaction history with 1-minute staleness
  */
-export function useAccountTransactions(
-  accountId: string | null,
-  limit = 20
-) {
+export function useAccountTransactions(accountId: string | null, limit = 20) {
   return useQuery({
     queryKey: [...stellarKeys.transactions(accountId!), limit],
     queryFn: () => fetchAccountTransactions(accountId!, limit),
     enabled: !!accountId,
-    staleTime: 60_000,     // Consider fresh for 1 minute
-    gcTime: 600_000,       // Keep in cache for 10 minutes
+    staleTime: 60_000, // Consider fresh for 1 minute
+    gcTime: 600_000, // Keep in cache for 10 minutes
   });
 }
 
@@ -373,7 +379,7 @@ export function useAccountDetails(accountId: string | null) {
     queryKey: stellarKeys.details(accountId!),
     queryFn: () => fetchAccountDetails(accountId!),
     enabled: !!accountId,
-    staleTime: 60_000,     // Consider fresh for 1 minute
+    staleTime: 60_000, // Consider fresh for 1 minute
     gcTime: 300_000,
   });
 }
@@ -384,7 +390,7 @@ export function useAccountDetails(accountId: string | null) {
  */
 export function useInvalidateAccount() {
   const queryClient = useQueryClient();
-  
+
   return {
     invalidateBalances: (accountId: string) => {
       queryClient.invalidateQueries({
@@ -414,7 +420,12 @@ export function useInvalidateAccount() {
 import { useAccountBalances } from '@/hooks/useStellarAccount';
 
 export function AccountBalances({ accountId }: { accountId: string }) {
-  const { data: balances, isLoading, error, dataUpdatedAt } = useAccountBalances(accountId);
+  const {
+    data: balances,
+    isLoading,
+    error,
+    dataUpdatedAt,
+  } = useAccountBalances(accountId);
 
   if (isLoading) {
     return <div className="animate-pulse">Loading balances...</div>;
@@ -438,11 +449,9 @@ export function AccountBalances({ accountId }: { accountId: string }) {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Balances</h2>
-        <span className="text-sm text-gray-500">
-          Updated: {lastUpdated}
-        </span>
+        <span className="text-sm text-gray-500">Updated: {lastUpdated}</span>
       </div>
-      
+
       <div className="space-y-2">
         {balances.map((balance, idx) => (
           <div
@@ -450,9 +459,7 @@ export function AccountBalances({ accountId }: { accountId: string }) {
             className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
           >
             <div>
-              <div className="font-medium">
-                {balance.assetCode}
-              </div>
+              <div className="font-medium">{balance.assetCode}</div>
               {!balance.isNative && (
                 <div className="text-xs text-gray-500 truncate max-w-xs">
                   {balance.assetIssuer}
@@ -504,9 +511,16 @@ export function useSubmitPayment() {
   const { invalidateBalances, invalidateTransactions } = useInvalidateAccount();
 
   return useMutation({
-    mutationFn: async ({ sourceKeypair, destination, amount, asset }: PaymentParams) => {
-      const sourceAccount = await horizonServer.loadAccount(sourceKeypair.publicKey());
-      
+    mutationFn: async ({
+      sourceKeypair,
+      destination,
+      amount,
+      asset,
+    }: PaymentParams) => {
+      const sourceAccount = await horizonServer.loadAccount(
+        sourceKeypair.publicKey()
+      );
+
       const transaction = new TransactionBuilder(sourceAccount, {
         fee: BASE_FEE,
         networkPassphrase: Networks.TESTNET,
@@ -520,16 +534,16 @@ export function useSubmitPayment() {
         )
         .setTimeout(30)
         .build();
-      
+
       transaction.sign(sourceKeypair);
-      
+
       const result = await horizonServer.submitTransaction(transaction);
       return result;
     },
     onSuccess: (data, variables) => {
       // Invalidate caches for both sender and receiver
       const sourceId = variables.sourceKeypair.publicKey();
-      
+
       invalidateBalances(sourceId);
       invalidateBalances(variables.destination);
       invalidateTransactions(sourceId);
@@ -552,8 +566,13 @@ import { useSubmitPayment } from '@/hooks/useSubmitPayment';
 export function PaymentForm({ sourceKeypair }: { sourceKeypair: Keypair }) {
   const [destination, setDestination] = useState('');
   const [amount, setAmount] = useState('');
-  
-  const { mutate: submitPayment, isPending, isSuccess, error } = useSubmitPayment();
+
+  const {
+    mutate: submitPayment,
+    isPending,
+    isSuccess,
+    error,
+  } = useSubmitPayment();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -575,11 +594,9 @@ export function PaymentForm({ sourceKeypair }: { sourceKeypair: Keypair }) {
           required
         />
       </div>
-      
+
       <div>
-        <label className="block text-sm font-medium mb-1">
-          Amount (XLM)
-        </label>
+        <label className="block text-sm font-medium mb-1">Amount (XLM)</label>
         <input
           type="number"
           step="0.0000001"
@@ -590,7 +607,7 @@ export function PaymentForm({ sourceKeypair }: { sourceKeypair: Keypair }) {
           required
         />
       </div>
-      
+
       <button
         type="submit"
         disabled={isPending}
@@ -598,17 +615,15 @@ export function PaymentForm({ sourceKeypair }: { sourceKeypair: Keypair }) {
       >
         {isPending ? 'Sending...' : 'Send Payment'}
       </button>
-      
+
       {isSuccess && (
         <div className="text-green-600 text-sm">
           Payment sent successfully! Balances will refresh automatically.
         </div>
       )}
-      
+
       {error && (
-        <div className="text-red-600 text-sm">
-          Error: {error.message}
-        </div>
+        <div className="text-red-600 text-sm">Error: {error.message}</div>
       )}
     </form>
   );
@@ -639,17 +654,17 @@ export function useOptimisticPayment() {
     },
     onMutate: async (variables) => {
       const sourceId = variables.sourceKeypair.publicKey();
-      
+
       // Cancel outgoing refetches
       await queryClient.cancelQueries({
         queryKey: stellarKeys.balances(sourceId),
       });
-      
+
       // Snapshot current balances
       const previousBalances = queryClient.getQueryData(
         stellarKeys.balances(sourceId)
       );
-      
+
       // Optimistically update cache
       queryClient.setQueryData(
         stellarKeys.balances(sourceId),
@@ -667,7 +682,7 @@ export function useOptimisticPayment() {
           );
         }
       );
-      
+
       return { previousBalances };
     },
     onError: (err, variables, context) => {
@@ -698,14 +713,14 @@ export function usePrefetchAccount(accountId: string | null) {
 
   const prefetch = () => {
     if (!accountId) return;
-    
+
     // Prefetch balances
     queryClient.prefetchQuery({
       queryKey: stellarKeys.balances(accountId),
       queryFn: () => fetchAccountBalances(accountId),
       staleTime: 10_000,
     });
-    
+
     // Prefetch transactions
     queryClient.prefetchQuery({
       queryKey: stellarKeys.transactions(accountId),
@@ -746,11 +761,11 @@ export function useTransactionPages(accountId: string | null) {
         .forAccount(accountId!)
         .limit(20)
         .order('desc');
-      
+
       if (pageParam) {
         builder.cursor(pageParam);
       }
-      
+
       const result = await builder.call();
       return {
         records: result.records,
@@ -783,7 +798,11 @@ export function Providers({ children }: { children: ReactNode }) {
             // Stop refetching when tab is hidden
             refetchInterval: (query) => {
               if (typeof document === 'undefined') return false;
-              return document.hidden ? false : query.state.data ? 10_000 : false;
+              return document.hidden
+                ? false
+                : query.state.data
+                  ? 10_000
+                  : false;
             },
           },
         },
@@ -791,9 +810,7 @@ export function Providers({ children }: { children: ReactNode }) {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      {children}
-    </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
   );
 }
 ```
@@ -821,13 +838,13 @@ Don't use a global `staleTime` — configure per query based on data volatility:
 
 ```ts
 // Fast-changing data
-staleTime: 5_000   // 5 seconds
+staleTime: 5_000; // 5 seconds
 
 // Moderate data
-staleTime: 30_000  // 30 seconds
+staleTime: 30_000; // 30 seconds
 
 // Slow-changing data
-staleTime: 300_000 // 5 minutes
+staleTime: 300_000; // 5 minutes
 ```
 
 ### 3. Always Invalidate After Mutations
@@ -839,7 +856,7 @@ onSuccess: (data, variables) => {
   queryClient.invalidateQueries({
     queryKey: stellarKeys.balances(accountId),
   });
-}
+};
 ```
 
 ### 4. Handle Errors Gracefully
@@ -862,7 +879,7 @@ if (error) {
 Large caches consume memory. Set `gcTime` to remove old data:
 
 ```ts
-gcTime: 300_000  // Remove from cache after 5 minutes of inactivity
+gcTime: 300_000; // Remove from cache after 5 minutes of inactivity
 ```
 
 ### 6. Use Dependent Queries Carefully
@@ -965,12 +982,12 @@ if (data) return <Content data={data} />; // Show cached data even if refetching
 
 Typical performance improvements with caching:
 
-| Scenario | Without Cache | With Cache | Improvement |
-|----------|--------------|------------|-------------|
-| Re-render same component | 200-500ms | \<10ms | 20-50x |
-| Navigate back to cached page | 200-500ms | \<10ms | 20-50x |
-| Rapid user actions | Each triggers API call | Batched/deduplicated | 5-10x fewer calls |
-| Rate limit exposure | High risk at scale | Stays under quota | N/A |
+| Scenario                     | Without Cache          | With Cache           | Improvement       |
+| ---------------------------- | ---------------------- | -------------------- | ----------------- |
+| Re-render same component     | 200-500ms              | \<10ms               | 20-50x            |
+| Navigate back to cached page | 200-500ms              | \<10ms               | 20-50x            |
+| Rapid user actions           | Each triggers API call | Batched/deduplicated | 5-10x fewer calls |
+| Rate limit exposure          | High risk at scale     | Stays under quota    | N/A               |
 
 ---
 
@@ -985,7 +1002,7 @@ test('caches balance data', async () => {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
-  
+
   const wrapper = ({ children }: any) => (
     <QueryClientProvider client={queryClient}>
       {children}
@@ -1000,10 +1017,10 @@ test('caches balance data', async () => {
   await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
   const firstData = result.current.data;
-  
+
   // Unmount and remount
   rerender();
-  
+
   // Should serve from cache immediately
   expect(result.current.data).toBe(firstData);
   expect(result.current.isFetching).toBe(false);
@@ -1014,13 +1031,13 @@ test('caches balance data', async () => {
 
 ## Related Resources
 
-| Resource | Link |
-|----------|------|
+| Resource                     | Link                                                                          |
+| ---------------------------- | ----------------------------------------------------------------------------- |
 | Rate limits and 429 recovery | [Rate Limiting Horizon Requests](/docs/guides/rate-limiting-horizon-requests) |
-| Horizon integration overview | [Stellar Horizon](/docs/integrations/horizon) |
-| Prebuilt balances hook | [useStellarBalances](/docs/hooks/use-stellar-balances) |
-| Prebuilt history hook | [useTransactionHistory](/docs/hooks/use-transaction-history) |
-| Mocking Horizon in tests | [Testing Integrations](/docs/integrations/testing) |
+| Horizon integration overview | [Stellar Horizon](/docs/integrations/horizon)                                 |
+| Prebuilt balances hook       | [useStellarBalances](/docs/hooks/use-stellar-balances)                        |
+| Prebuilt history hook        | [useTransactionHistory](/docs/hooks/use-transaction-history)                  |
+| Mocking Horizon in tests     | [Testing Integrations](/docs/integrations/testing)                            |
 
 ---
 
@@ -1041,4 +1058,3 @@ test('caches balance data', async () => {
 - [ ] Testing example provided
 - [ ] All TypeScript code is type-safe and compiles
 - [ ] Code follows Next.js 14+ conventions (use client directives, app router patterns)
-

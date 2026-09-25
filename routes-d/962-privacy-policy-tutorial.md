@@ -17,11 +17,13 @@ Working draft for the docs change requested in issue #962.
 ## Sections
 
 ### Stellar-Specific Data Flows
+
 - Public key as pseudonymous identifier
 - On-chain transaction history
 - Third-party services (Horizon, Soroban RPC)
 
 ### Common Privacy Policy Sections
+
 - Data controller identity
 - What data is collected and why
 - On-chain vs. off-chain data distinction
@@ -30,6 +32,7 @@ Working draft for the docs change requested in issue #962.
 - Data retention
 
 ### What to Describe per Integration
+
 - Horizon calls — IP address logging
 - Wallet connection — public key only, no private key
 - Analytics — if applicable

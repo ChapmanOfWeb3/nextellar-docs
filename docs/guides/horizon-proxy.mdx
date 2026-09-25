@@ -19,13 +19,16 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 
 const app = express();
 
-app.use('/horizon', createProxyMiddleware({
-  target: 'https://horizon.stellar.org',
-  changeOrigin: true,
-  pathRewrite: {
-    '^/horizon': '', // remove base path
-  },
-}));
+app.use(
+  '/horizon',
+  createProxyMiddleware({
+    target: 'https://horizon.stellar.org',
+    changeOrigin: true,
+    pathRewrite: {
+      '^/horizon': '', // remove base path
+    },
+  })
+);
 
 app.listen(3000, () => {
   console.log('Horizon proxy listening on port 3000');
@@ -33,6 +36,7 @@ app.listen(3000, () => {
 ```
 
 ## Advantages
+
 - Reduces load on the primary network.
 - Custom filtering of responses.
 - Caching of frequent read requests.

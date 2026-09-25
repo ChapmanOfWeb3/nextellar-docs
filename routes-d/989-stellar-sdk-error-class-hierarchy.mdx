@@ -28,14 +28,14 @@ Error (native JavaScript Error)
 
 ## Common Error Types
 
-| Error Class | Origin / Thrown When | Key Properties |
-| --- | --- | --- |
-| `NetworkError` | Horizon or Soroban RPC network connectivity or transport failure | `response`, `status` |
-| `NotFoundError` | Resource missing on network (e.g. unfunded account, non-existent transaction hash) | `response` (HTTP 404) |
-| `BadRequestError` | Horizon rejects query parameters or malformed request payload | `response` (HTTP 400) |
-| `BadResponseError` | Horizon or RPC server returns HTTP 5xx or invalid non-JSON body | `response` (HTTP 500+) |
-| `TransactionFailedError` | Horizon rejects signed transaction submission (e.g. `op_underfunded`, `tx_bad_seq`) | `response.data.extras.result_codes` |
-| `AccountRequiresMemoError` | Target account requires a memo (SEP-0029) but none was provided | `accountId` |
+| Error Class                | Origin / Thrown When                                                                | Key Properties                      |
+| -------------------------- | ----------------------------------------------------------------------------------- | ----------------------------------- |
+| `NetworkError`             | Horizon or Soroban RPC network connectivity or transport failure                    | `response`, `status`                |
+| `NotFoundError`            | Resource missing on network (e.g. unfunded account, non-existent transaction hash)  | `response` (HTTP 404)               |
+| `BadRequestError`          | Horizon rejects query parameters or malformed request payload                       | `response` (HTTP 400)               |
+| `BadResponseError`         | Horizon or RPC server returns HTTP 5xx or invalid non-JSON body                     | `response` (HTTP 500+)              |
+| `TransactionFailedError`   | Horizon rejects signed transaction submission (e.g. `op_underfunded`, `tx_bad_seq`) | `response.data.extras.result_codes` |
+| `AccountRequiresMemoError` | Target account requires a memo (SEP-0029) but none was provided                     | `accountId`                         |
 
 ---
 
@@ -44,10 +44,7 @@ Error (native JavaScript Error)
 Use instance checks or error code inspection to handle specific error types:
 
 ```typescript
-import {
-  NotFoundError,
-  TransactionFailedError,
-} from '@stellar/stellar-sdk';
+import { NotFoundError, TransactionFailedError } from '@stellar/stellar-sdk';
 
 try {
   const result = await server.submitTransaction(signedTx);

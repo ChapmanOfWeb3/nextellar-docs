@@ -45,7 +45,8 @@ import { db } from '@/lib/db';
 
 export async function GET() {
   const session = await getServerSession();
-  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  if (!session?.user?.id)
+    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
@@ -69,7 +70,8 @@ A user can request deletion of their personal data. You must comply unless a leg
 // app/api/user/delete/route.ts
 export async function DELETE() {
   const session = await getServerSession();
-  if (!session?.user?.id) return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
+  if (!session?.user?.id)
+    return NextResponse.json({ error: 'Unauthenticated' }, { status: 401 });
 
   await db.user.update({
     where: { id: session.user.id },
@@ -83,7 +85,9 @@ export async function DELETE() {
   // Revoke all sessions
   await db.session.deleteMany({ where: { userId: session.user.id } });
 
-  return NextResponse.json({ message: 'Account deleted. On-chain data cannot be removed.' });
+  return NextResponse.json({
+    message: 'Account deleted. On-chain data cannot be removed.',
+  });
 }
 ```
 
@@ -126,46 +130,46 @@ Article 30 requires organisations to maintain a **Record of Processing Activitie
 
 ## Processing activity 1 — User account management
 
-| Field | Value |
-|-------|-------|
-| Purpose | Create and manage user accounts |
-| Legal basis | Contract (Article 6(1)(b)) |
-| Data subjects | Registered users |
-| Personal data categories | Email address, Stellar public key, creation timestamp |
-| Recipients | Internal engineering team; email delivery provider ([Provider name]) |
-| Third-country transfers | [Provider name] — covered by Standard Contractual Clauses |
-| Retention | Until account deletion; email logs 90 days |
-| Security measures | Encryption at rest (AES-256), TLS in transit, access control |
+| Field                    | Value                                                                |
+| ------------------------ | -------------------------------------------------------------------- |
+| Purpose                  | Create and manage user accounts                                      |
+| Legal basis              | Contract (Article 6(1)(b))                                           |
+| Data subjects            | Registered users                                                     |
+| Personal data categories | Email address, Stellar public key, creation timestamp                |
+| Recipients               | Internal engineering team; email delivery provider ([Provider name]) |
+| Third-country transfers  | [Provider name] — covered by Standard Contractual Clauses            |
+| Retention                | Until account deletion; email logs 90 days                           |
+| Security measures        | Encryption at rest (AES-256), TLS in transit, access control         |
 
 ---
 
 ## Processing activity 2 — Server logs
 
-| Field | Value |
-|-------|-------|
-| Purpose | Security, abuse prevention, debugging |
-| Legal basis | Legitimate interests (Article 6(1)(f)) |
-| Data subjects | All visitors |
-| Personal data categories | IP address, user-agent string, request path, timestamp |
-| Recipients | Internal engineering team |
-| Third-country transfers | None (self-hosted) or [Cloud provider — SCCs] |
-| Retention | 30 days (automated log rotation) |
-| Security measures | Access restricted to engineering team; logs not backed up beyond 30 days |
+| Field                    | Value                                                                    |
+| ------------------------ | ------------------------------------------------------------------------ |
+| Purpose                  | Security, abuse prevention, debugging                                    |
+| Legal basis              | Legitimate interests (Article 6(1)(f))                                   |
+| Data subjects            | All visitors                                                             |
+| Personal data categories | IP address, user-agent string, request path, timestamp                   |
+| Recipients               | Internal engineering team                                                |
+| Third-country transfers  | None (self-hosted) or [Cloud provider — SCCs]                            |
+| Retention                | 30 days (automated log rotation)                                         |
+| Security measures        | Access restricted to engineering team; logs not backed up beyond 30 days |
 
 ---
 
 ## Processing activity 3 — Analytics
 
-| Field | Value |
-|-------|-------|
-| Purpose | Understanding usage patterns, product improvement |
-| Legal basis | Legitimate interests / consent (depending on tool and configuration) |
-| Data subjects | All visitors |
-| Personal data categories | Anonymised page views, event counts (no PII after anonymisation) |
-| Recipients | [Analytics provider name] |
-| Third-country transfers | [Provider name — SCCs or adequacy decision] |
-| Retention | Anonymised after 12 months; raw (pre-anonymisation) data 30 days |
-| Security measures | Anonymisation before storage; pseudonymisation in transit |
+| Field                    | Value                                                                |
+| ------------------------ | -------------------------------------------------------------------- |
+| Purpose                  | Understanding usage patterns, product improvement                    |
+| Legal basis              | Legitimate interests / consent (depending on tool and configuration) |
+| Data subjects            | All visitors                                                         |
+| Personal data categories | Anonymised page views, event counts (no PII after anonymisation)     |
+| Recipients               | [Analytics provider name]                                            |
+| Third-country transfers  | [Provider name — SCCs or adequacy decision]                          |
+| Retention                | Anonymised after 12 months; raw (pre-anonymisation) data 30 days     |
+| Security measures        | Anonymisation before storage; pseudonymisation in transit            |
 ```
 
 ## Pre-Launch Compliance Checklist

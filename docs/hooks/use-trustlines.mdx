@@ -9,7 +9,8 @@ date: 2026-06-02
 The `useTrustlines` hook manages asset trustlines, allowing accounts to hold custom Stellar assets. It provides methods to query existing trustlines, build change-trust transactions, and submit them to the network.
 
 <Note>
-  **Ships in:** default, defi, js-template, js-defi (not minimal)<br/>
+  **Ships in:** default, defi, js-template, js-defi (not minimal)
+  <br />
   Not in your scaffold? Run `nextellar add trustlines`
 </Note>
 
@@ -90,11 +91,11 @@ useTrustlines(
 ): TrustlinesState
 ```
 
-| Parameter    | Type                    | Default                                          | Description                                         |
-| ------------ | ----------------------- | ------------------------------------------------ | --------------------------------------------------- |
-| `publicKey`  | `string \| null`        | `undefined`                                      | Account to load trustlines for                      |
-| `horizonUrl` | `string`                | WalletProvider config or `https://horizon-testnet.stellar.org` | Horizon server URL                    |
-| `network`    | `'TESTNET' \| 'PUBLIC'` | `'TESTNET'`                                      | Network passphrase used when building transactions  |
+| Parameter    | Type                    | Default                                                        | Description                                        |
+| ------------ | ----------------------- | -------------------------------------------------------------- | -------------------------------------------------- |
+| `publicKey`  | `string \| null`        | `undefined`                                                    | Account to load trustlines for                     |
+| `horizonUrl` | `string`                | WalletProvider config or `https://horizon-testnet.stellar.org` | Horizon server URL                                 |
+| `network`    | `'TESTNET' \| 'PUBLIC'` | `'TESTNET'`                                                    | Network passphrase used when building transactions |
 
 `horizonUrl` falls back to `WalletProvider`. `network` does **not** — it defaults to `'TESTNET'` unless you pass it in `options`.
 
@@ -210,6 +211,124 @@ const { trustlines } = useTrustlines(publicKey);
 
 const hasUSDC = trustlines.some((tl) => tl.asset_code === 'USDC');
 ```
+
+### Adding and Removing a Trustline
+
+A complete, runnable component that toggles a trustline for one asset. It uses `useTrustlines` to build the change-trust XDR, Freighter to sign it, and [`useStellarPayment`](/docs/hooks/use-stellar-payment)'s `submitSignedXDR` to submit it, then calls `refresh()` so the list stays in sync.
+
+Drop it into `src/app/trustlines/page.tsx` in a default or defi scaffold and visit `/trustlines` with Freighter set to Testnet:
+
+```tsx
+'use client';
+
+import { useState } from 'react';
+import { Networks } from '@stellar/stellar-sdk';
+import { signTransaction } from '@stellar/freighter-api';
+import { useStellarWallet } from '@/hooks/useStellarWallet';
+import { useStellarPayment } from '@/hooks/useStellarPayment';
+import { useTrustlines } from '@/hooks/useTrustlines';
+
+const HORIZON_URL = 'https://horizon-testnet.stellar.org';
+
+// Testnet USDC issued by Circle
+const ASSET = {
+  code: 'USDC',
+  issuer: 'GBBD47IF6LWK7P7MDEVSCWR7DPUWV3NY3DTQEVFL4NAT4AQH3ZLLFLA5',
+};
+
+export default function TrustlineToggle() {
+  const { publicKey, connected, connect } = useStellarWallet();
+  const { submitSignedXDR } = useStellarPayment({ horizonUrl: HORIZON_URL });
+  const { trustlines, loading, error, refresh, buildChangeTrustXDR } =
+    useTrustlines(publicKey, { horizonUrl: HORIZON_URL, network: 'TESTNET' });
+
+  const [pending, setPending] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const existing = trustlines.find(
+    (tl) => tl.asset_code === ASSET.code && tl.asset_issuer === ASSET.issuer
+  );
+  const canRemove = !existing || Number(existing.balance ?? '0') === 0;
+
+  const changeTrust = async (limit?: string) => {
+    setPending(true);
+    setMessage(null);
+    try {
+      // 1. Build the unsigned change_trust XDR.
+      //    Omit `limit` to add (maximum limit); pass '0' to remove.
+      const xdr = await buildChangeTrustXDR({ ...ASSET, limit });
+
+      // 2. Sign with Freighter.
+      const signed = await signTransaction(xdr, {
+        networkPassphrase: Networks.TESTNET,
+      });
+      if (signed.error) throw new Error(String(signed.error));
+
+      // 3. Submit the signed transaction to Horizon.
+      const result = await submitSignedXDR(signed.signedTxXdr);
+      if (!result.success) throw new Error(result.error);
+
+      setMessage(
+        `${limit === '0' ? 'Removed' : 'Added'} ${ASSET.code} trustline (tx ${result.txHash?.slice(0, 8)}…)`
+      );
+      await refresh();
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Change trust failed');
+    } finally {
+      setPending(false);
+    }
+  };
+
+  if (!connected) {
+    return <button onClick={connect}>Connect wallet</button>;
+  }
+
+  if (loading && trustlines.length === 0) return <p>Loading trustlines…</p>;
+
+  return (
+    <div>
+      <h2>{ASSET.code} trustline</h2>
+      <p>
+        Status:{' '}
+        {existing
+          ? `active (balance ${existing.balance ?? '0'})`
+          : 'not established'}
+      </p>
+
+      {existing ? (
+        <button
+          onClick={() => changeTrust('0')}
+          disabled={pending || !canRemove}
+        >
+          {pending ? 'Removing…' : `Remove ${ASSET.code} trustline`}
+        </button>
+      ) : (
+        <button onClick={() => changeTrust()} disabled={pending}>
+          {pending ? 'Adding…' : `Add ${ASSET.code} trustline`}
+        </button>
+      )}
+
+      {!canRemove && (
+        <p>Balance must be 0 before the trustline can be removed.</p>
+      )}
+      {message && <p>{message}</p>}
+      {error && <p>Error loading trustlines: {error.message}</p>}
+    </div>
+  );
+}
+```
+
+What to expect:
+
+1. **Add** — the wallet prompts you to sign a `change_trust` operation. Once Horizon confirms it, the status flips to `active (balance 0)` and the account's minimum balance rises by 0.5 XLM.
+2. **Remove** — only enabled while the balance is `0`. Signing a `change_trust` with `limit: '0'` deletes the trustline and releases the 0.5 XLM reserve.
+3. **Failures** — Horizon result codes such as `op_low_reserve` (not enough XLM to add) or `op_invalid_limit` (balance still above 0 when removing) are shown in the status message; the buttons re-enable so the user can retry.
+
+<Note>
+  Using a different wallet? Replace step 2 with that wallet's signing call.
+  Steps 1 and 3 stay the same because `buildChangeTrustXDR` and
+  `submitSignedXDR` only deal in XDR strings.
+</Note>
 
 ## Error Handling
 

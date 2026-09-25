@@ -10,19 +10,24 @@ date: 2026-08-27
 
 ## Frequently Used Factories
 
-| Factory | Description |
-| --- | --- |
-| `Operation.payment({ destination, asset, amount })` | Sends a payment of `asset` to `destination`. |
-| `Operation.createAccount({ destination, startingBalance })` | Funds and creates a new account on the ledger. |
-| `Operation.changeTrust({ asset, limit })` | Creates or modifies a trustline for a non-native asset. |
+| Factory                                                                                       | Description                                                                             |
+| --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `Operation.payment({ destination, asset, amount })`                                           | Sends a payment of `asset` to `destination`.                                            |
+| `Operation.createAccount({ destination, startingBalance })`                                   | Funds and creates a new account on the ledger.                                          |
+| `Operation.changeTrust({ asset, limit })`                                                     | Creates or modifies a trustline for a non-native asset.                                 |
 | `Operation.pathPaymentStrictSend({ sendAsset, sendAmount, destination, destAsset, destMin })` | Sends a fixed source amount, converted through the DEX to a minimum destination amount. |
-| `Operation.manageSellOffer({ selling, buying, amount, price })` | Creates, updates, or deletes an offer on the DEX. |
-| `Operation.invokeHostFunction({ func, auth })` | Invokes a Soroban contract function (or deploys/uploads one) via the host function XDR. |
+| `Operation.manageSellOffer({ selling, buying, amount, price })`                               | Creates, updates, or deletes an offer on the DEX.                                       |
+| `Operation.invokeHostFunction({ func, auth })`                                                | Invokes a Soroban contract function (or deploys/uploads one) via the host function XDR. |
 
 ## Example
 
 ```typescript
-import { Operation, Asset, TransactionBuilder, Networks } from '@stellar/stellar-sdk';
+import {
+  Operation,
+  Asset,
+  TransactionBuilder,
+  Networks,
+} from '@stellar/stellar-sdk';
 
 const payment = Operation.payment({
   destination: 'GDESTINATION...',

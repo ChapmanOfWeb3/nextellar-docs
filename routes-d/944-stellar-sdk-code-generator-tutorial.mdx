@@ -9,8 +9,8 @@ date: 2026-08-27
 Hand-writing a TypeScript client for every Soroban contract method invites drift: the contract adds a parameter, the client doesn't, and the mismatch surfaces at runtime instead of compile time. This tutorial builds a small code generator that reads a contract's method schema and emits a typed client, so the client is regenerated — not hand-edited — whenever the contract's interface changes.
 
 <Note type="warning">
-  This tutorial generates a client from a hand-authored JSON schema describing
-  a contract's methods, not from a live on-chain WASM binary. For generating
+  This tutorial generates a client from a hand-authored JSON schema describing a
+  contract's methods, not from a live on-chain WASM binary. For generating
   directly from a deployed contract's on-chain interface, see the official
   `@stellar/stellar-sdk` contract client bindings generator, which this
   tutorial's approach complements for cases where you want a lighter-weight,
@@ -24,12 +24,12 @@ The generator takes a small JSON schema (one entry per contract method) and prod
 ```ts
 // scripts/codegen/schema-types.ts
 export type ContractFieldType =
-  | "Address"
-  | "String"
-  | "U32"
-  | "U64"
-  | "I128"
-  | "Bool";
+  | 'Address'
+  | 'String'
+  | 'U32'
+  | 'U64'
+  | 'I128'
+  | 'Bool';
 
 export interface ContractParam {
   name: string;
@@ -39,7 +39,7 @@ export interface ContractParam {
 export interface ContractMethodSchema {
   name: string;
   params: ContractParam[];
-  returns: ContractFieldType | "void";
+  returns: ContractFieldType | 'void';
   docs?: string;
 }
 
@@ -51,58 +51,58 @@ export interface ContractSchema {
 
 ```ts
 // scripts/codegen/type-mapping.ts
-import type { ContractFieldType } from "./schema-types";
+import type { ContractFieldType } from './schema-types';
 
 const TYPE_MAP: Record<ContractFieldType, string> = {
-  Address: "string",
-  String: "string",
-  U32: "number",
-  U64: "bigint",
-  I128: "bigint",
-  Bool: "boolean",
+  Address: 'string',
+  String: 'string',
+  U32: 'number',
+  U64: 'bigint',
+  I128: 'bigint',
+  Bool: 'boolean',
 };
 
 export function mapContractType(type: ContractFieldType): string {
   return TYPE_MAP[type];
 }
 
-export function mapReturnType(type: ContractFieldType | "void"): string {
-  return type === "void" ? "void" : mapContractType(type);
+export function mapReturnType(type: ContractFieldType | 'void'): string {
+  return type === 'void' ? 'void' : mapContractType(type);
 }
 ```
 
 ```ts
 // scripts/codegen/type-mapping.test.ts
-import { describe, expect, it } from "vitest";
-import { mapContractType, mapReturnType } from "./type-mapping";
+import { describe, expect, it } from 'vitest';
+import { mapContractType, mapReturnType } from './type-mapping';
 
-describe("mapContractType", () => {
-  it("maps Address and String to string", () => {
-    expect(mapContractType("Address")).toBe("string");
-    expect(mapContractType("String")).toBe("string");
+describe('mapContractType', () => {
+  it('maps Address and String to string', () => {
+    expect(mapContractType('Address')).toBe('string');
+    expect(mapContractType('String')).toBe('string');
   });
 
-  it("maps U32 to number", () => {
-    expect(mapContractType("U32")).toBe("number");
+  it('maps U32 to number', () => {
+    expect(mapContractType('U32')).toBe('number');
   });
 
-  it("maps U64 and I128 to bigint, since they can exceed Number.MAX_SAFE_INTEGER", () => {
-    expect(mapContractType("U64")).toBe("bigint");
-    expect(mapContractType("I128")).toBe("bigint");
+  it('maps U64 and I128 to bigint, since they can exceed Number.MAX_SAFE_INTEGER', () => {
+    expect(mapContractType('U64')).toBe('bigint');
+    expect(mapContractType('I128')).toBe('bigint');
   });
 
-  it("maps Bool to boolean", () => {
-    expect(mapContractType("Bool")).toBe("boolean");
+  it('maps Bool to boolean', () => {
+    expect(mapContractType('Bool')).toBe('boolean');
   });
 });
 
-describe("mapReturnType", () => {
-  it("maps void to void", () => {
-    expect(mapReturnType("void")).toBe("void");
+describe('mapReturnType', () => {
+  it('maps void to void', () => {
+    expect(mapReturnType('void')).toBe('void');
   });
 
-  it("delegates non-void types to mapContractType", () => {
-    expect(mapReturnType("U32")).toBe("number");
+  it('delegates non-void types to mapContractType', () => {
+    expect(mapReturnType('U32')).toBe('number');
   });
 });
 ```
@@ -111,18 +111,18 @@ describe("mapReturnType", () => {
 
 ```ts
 // scripts/codegen/generate-client.ts
-import type { ContractMethodSchema, ContractSchema } from "./schema-types";
-import { mapContractType, mapReturnType } from "./type-mapping";
+import type { ContractMethodSchema, ContractSchema } from './schema-types';
+import { mapContractType, mapReturnType } from './type-mapping';
 
 function generateMethodSignature(method: ContractMethodSchema): string {
   const params = method.params
     .map((p) => `${p.name}: ${mapContractType(p.type)}`)
-    .join(", ");
+    .join(', ');
   return `${method.name}(${params}): Promise<${mapReturnType(method.returns)}>`;
 }
 
 function generateMethodBody(method: ContractMethodSchema): string {
-  const argNames = method.params.map((p) => p.name).join(", ");
+  const argNames = method.params.map((p) => p.name).join(', ');
   return [
     `  async ${generateMethodSignature(method)} {`,
     method.docs ? `    // ${method.docs}` : null,
@@ -130,11 +130,11 @@ function generateMethodBody(method: ContractMethodSchema): string {
     `  }`,
   ]
     .filter((line): line is string => line !== null)
-    .join("\n");
+    .join('\n');
 }
 
 export function generateClient(schema: ContractSchema): string {
-  const methodBodies = schema.methods.map(generateMethodBody).join("\n\n");
+  const methodBodies = schema.methods.map(generateMethodBody).join('\n\n');
 
   return `// AUTO-GENERATED — do not edit by hand. Regenerate from the contract schema.
 import { Contract, TransactionBuilder } from "@stellar/stellar-sdk";
@@ -155,60 +155,62 @@ ${methodBodies}
 
 ```ts
 // scripts/codegen/generate-client.test.ts
-import { describe, expect, it } from "vitest";
-import { generateClient } from "./generate-client";
-import type { ContractSchema } from "./schema-types";
+import { describe, expect, it } from 'vitest';
+import { generateClient } from './generate-client';
+import type { ContractSchema } from './schema-types';
 
 const insuranceSchema: ContractSchema = {
-  contractName: "InsurancePool",
+  contractName: 'InsurancePool',
   methods: [
     {
-      name: "buy_policy",
+      name: 'buy_policy',
       params: [
-        { name: "holder", type: "Address" },
-        { name: "coverage", type: "I128" },
+        { name: 'holder', type: 'Address' },
+        { name: 'coverage', type: 'I128' },
       ],
-      returns: "U32",
-      docs: "Purchases a new policy and returns its policy id.",
+      returns: 'U32',
+      docs: 'Purchases a new policy and returns its policy id.',
     },
     {
-      name: "get_policy",
-      params: [{ name: "policyId", type: "U32" }],
-      returns: "String",
+      name: 'get_policy',
+      params: [{ name: 'policyId', type: 'U32' }],
+      returns: 'String',
     },
   ],
 };
 
-describe("generateClient", () => {
-  it("names the generated class after the contract", () => {
+describe('generateClient', () => {
+  it('names the generated class after the contract', () => {
     const output = generateClient(insuranceSchema);
-    expect(output).toContain("class InsurancePoolClient");
+    expect(output).toContain('class InsurancePoolClient');
   });
 
-  it("generates a correctly-typed method signature for each schema method", () => {
+  it('generates a correctly-typed method signature for each schema method', () => {
     const output = generateClient(insuranceSchema);
     expect(output).toContain(
-      "async buy_policy(holder: string, coverage: bigint): Promise<number>",
+      'async buy_policy(holder: string, coverage: bigint): Promise<number>'
     );
     expect(output).toContain(
-      "async get_policy(policyId: number): Promise<string>",
+      'async get_policy(policyId: number): Promise<string>'
     );
   });
 
-  it("includes the docs comment when provided", () => {
+  it('includes the docs comment when provided', () => {
     const output = generateClient(insuranceSchema);
-    expect(output).toContain("// Purchases a new policy and returns its policy id.");
+    expect(output).toContain(
+      '// Purchases a new policy and returns its policy id.'
+    );
   });
 
-  it("omits a docs comment line when none is provided", () => {
+  it('omits a docs comment line when none is provided', () => {
     const output = generateClient(insuranceSchema);
-    const getPolicySection = output.split("async get_policy")[1];
-    expect(getPolicySection.split("\n")[1].trim()).not.toMatch(/^\/\//);
+    const getPolicySection = output.split('async get_policy')[1];
+    expect(getPolicySection.split('\n')[1].trim()).not.toMatch(/^\/\//);
   });
 
-  it("marks the output as auto-generated", () => {
+  it('marks the output as auto-generated', () => {
     const output = generateClient(insuranceSchema);
-    expect(output).toContain("AUTO-GENERATED — do not edit by hand");
+    expect(output).toContain('AUTO-GENERATED — do not edit by hand');
   });
 });
 ```
@@ -229,17 +231,17 @@ A small CLI wrapper ties schema-in to file-out and is what CI actually runs:
 
 ```ts
 // scripts/codegen/cli.ts
-import { readFileSync, writeFileSync } from "fs";
-import { generateClient } from "./generate-client";
-import type { ContractSchema } from "./schema-types";
+import { readFileSync, writeFileSync } from 'fs';
+import { generateClient } from './generate-client';
+import type { ContractSchema } from './schema-types';
 
 const [schemaPath, outputPath] = process.argv.slice(2);
 if (!schemaPath || !outputPath) {
-  console.error("Usage: tsx cli.ts <schema.json> <output.ts>");
+  console.error('Usage: tsx cli.ts <schema.json> <output.ts>');
   process.exit(1);
 }
 
-const schema: ContractSchema = JSON.parse(readFileSync(schemaPath, "utf-8"));
+const schema: ContractSchema = JSON.parse(readFileSync(schemaPath, 'utf-8'));
 writeFileSync(outputPath, generateClient(schema));
 console.log(`Generated ${outputPath} from ${schemaPath}`);
 ```

@@ -12,12 +12,12 @@ The `Contract` class in `@stellar/stellar-sdk` represents a Soroban smart contra
 
 ## Key Methods & Properties
 
-| Component | Description |
-| --- | --- |
-| `new Contract(contractId)` | Constructs a `Contract` instance bound to a specific C... address. |
-| `contract.contractId()` | Returns the 56-character strkey string of the target contract. |
+| Component                            | Description                                                              |
+| ------------------------------------ | ------------------------------------------------------------------------ |
+| `new Contract(contractId)`           | Constructs a `Contract` instance bound to a specific C... address.       |
+| `contract.contractId()`              | Returns the 56-character strkey string of the target contract.           |
 | `contract.call(methodName, ...args)` | Prepares an `Operation.invokeContractFunction` operation for invocation. |
-| `contract.address()` | Returns the `Address` instance representing the contract's identity. |
+| `contract.address()`                 | Returns the `Address` instance representing the contract's identity.     |
 
 ---
 
@@ -37,7 +37,13 @@ console.log('Contract StrKey:', contract.contractId());
 ### 2. Invoking Contract Functions
 
 ```typescript
-import { Contract, Operation, TransactionBuilder, Account, Address } from '@stellar/stellar-sdk';
+import {
+  Contract,
+  Operation,
+  TransactionBuilder,
+  Account,
+  Address,
+} from '@stellar/stellar-sdk';
 
 const contract = new Contract('C123...');
 const userAddress = Address.fromString('G123...');

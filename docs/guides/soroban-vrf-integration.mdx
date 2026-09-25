@@ -85,11 +85,15 @@ impl VrfConsumerContract {
 ## Client Integration Code (TypeScript)
 
 ```typescript
-import { Contract, SorobanRpc } from "@stellar/stellar-sdk";
+import { Contract, SorobanRpc } from '@stellar/stellar-sdk';
 
-async function fetchRandomOutcome(server: SorobanRpc.Server, contractId: string, requestId: bigint) {
+async function fetchRandomOutcome(
+  server: SorobanRpc.Server,
+  contractId: string,
+  requestId: bigint
+) {
   const contract = new Contract(contractId);
-  const tx = contract.call("get_random_result", requestId);
+  const tx = contract.call('get_random_result', requestId);
   const response = await server.simulateTransaction(tx);
   return response;
 }

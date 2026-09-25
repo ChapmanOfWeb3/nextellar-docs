@@ -10,10 +10,10 @@ date: 2026-08-27
 
 ## Helper Methods
 
-| Method | Horizon endpoint | You fix... | Use to discover... |
-| --- | --- | --- | --- |
-| `server.strictSendPaths(sourceAsset, sourceAmount, destinationAssets)` | `GET /paths/strict-send` | Exact amount you send | The minimum the recipient could receive for each destination asset |
-| `server.strictReceivePaths(destinationAssets, destinationAmount, sourceAssets)` | `GET /paths/strict-receive` | Exact amount the recipient gets | The source assets/amounts that could fund that payment |
+| Method                                                                          | Horizon endpoint            | You fix...                      | Use to discover...                                                 |
+| ------------------------------------------------------------------------------- | --------------------------- | ------------------------------- | ------------------------------------------------------------------ |
+| `server.strictSendPaths(sourceAsset, sourceAmount, destinationAssets)`          | `GET /paths/strict-send`    | Exact amount you send           | The minimum the recipient could receive for each destination asset |
+| `server.strictReceivePaths(destinationAssets, destinationAmount, sourceAssets)` | `GET /paths/strict-receive` | Exact amount the recipient gets | The source assets/amounts that could fund that payment             |
 
 Both methods return a `CallBuilder` — call `.call()` to execute the request, or `.limit(n)` to cap the number of candidate paths returned before calling.
 

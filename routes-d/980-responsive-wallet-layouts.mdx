@@ -12,11 +12,11 @@ Stellar dApp interfaces require adaptive responsive layouts to support seamless 
 
 ## Standard Breakpoints & Layout Adaptations
 
-| Device Class | Breakpoint Range | Navigation & Layout Strategy |
-| --- | --- | --- |
-| **Mobile** | `< 640px` | Bottom navigation bar or collapsible slide-out drawer. Single-column card stack. Sticky action drawer. |
-| **Tablet** | `640px - 1024px` | Collapsible sidebar. Two-column balance and transaction feed grid. |
-| **Desktop** | `> 1024px` | Expanded permanent sidebar navigation. Multi-column dashboard with side-by-side asset list & activity feed. |
+| Device Class | Breakpoint Range | Navigation & Layout Strategy                                                                                |
+| ------------ | ---------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Mobile**   | `< 640px`        | Bottom navigation bar or collapsible slide-out drawer. Single-column card stack. Sticky action drawer.      |
+| **Tablet**   | `640px - 1024px` | Collapsible sidebar. Two-column balance and transaction feed grid.                                          |
+| **Desktop**  | `> 1024px`       | Expanded permanent sidebar navigation. Multi-column dashboard with side-by-side asset list & activity feed. |
 
 ---
 
@@ -32,15 +32,13 @@ Stellar dApp interfaces require adaptive responsive layouts to support seamless 
 ```tsx
 import React from 'react';
 
-export const ResponsiveWalletContainer: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ResponsiveWalletContainer: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
   return (
     <div className="wallet-layout-grid">
-      <aside className="wallet-sidebar">
-        {/* Navigation links */}
-      </aside>
-      <main className="wallet-main-content">
-        {children}
-      </main>
+      <aside className="wallet-sidebar">{/* Navigation links */}</aside>
+      <main className="wallet-main-content">{children}</main>
       <div className="mobile-bottom-nav">
         <button>Overview</button>
         <button>Send</button>

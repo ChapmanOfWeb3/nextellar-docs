@@ -16,21 +16,25 @@ Working draft for the docs change requested in issue #971.
 ## Sections
 
 ### Data Classification
+
 - On-chain data (public key, transaction history) — immutable and always public
 - Off-chain identifiable data (email, IP address)
 - Off-chain non-identifiable data (aggregate analytics)
 - Wallet session data
 
 ### Retention Rules
+
 - On-chain: no retention needed — data lives on ledger forever
 - Email / contact: retain until user requests deletion
 - IP logs: 30–90 days recommended
 - Analytics: anonymised after 12 months
 
 ### Policy Template
+
 - Minimal policy checklist
 - Key clauses for Stellar-specific data flows
 
 ## Acceptance Criteria
+
 - Builds with `pnpm build:content` without errors
 - Internal links pass `pnpm check:links`

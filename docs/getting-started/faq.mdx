@@ -21,6 +21,7 @@ You need:
 - A terminal and a code editor
 
 No global installation is required to create your first project.
+
 ## Does it work on Windows?
 
 Yes. Nextellar works on Windows, macOS, and Linux when Node.js 20.18.0 or later and a supported package manager are available. On Windows, use PowerShell, Windows Terminal, or WSL, and run `npx nextellar doctor` first if path or package-manager detection looks inconsistent.
@@ -42,6 +43,7 @@ No. Using `npx nextellar` is the recommended approach and requires no global ins
 ```bash
 npm install -g nextellar
 ```
+
 ## Does Nextellar support JavaScript?
 
 Yes, for the default template. TypeScript remains the default and recommended path, but you can scaffold the default template with JavaScript when you do not want TypeScript files:
@@ -60,11 +62,17 @@ Nextellar supports **Freighter**, **Albedo**, **Lobstr**, **xBull**, and **Hana*
 
 Nextellar offers three templates for different project needs:
 
-- **default** — Full applications with comprehensive Stellar and Soroban features
-- **minimal** — Lightweight wallet-only applications
-- **defi** — DeFi-focused projects with DEX and trading capabilities
+| Template    | Best For                                                         | Hooks Included                                        | Soroban | JavaScript |
+| ----------- | ---------------------------------------------------------------- | ----------------------------------------------------- | ------- | ---------- |
+| **default** | Full applications that need the broadest standard starting point | All 8                                                 | ✓       | ✓          |
+| **minimal** | Wallet-only or lightweight starts with less scaffolding          | 2 (wallet, balances)                                  | —       | —          |
+| **defi**    | DEX, trading, order-book, and other DeFi-focused applications    | 5 (wallet, balances, payment, trustlines, offer book) | —       | ✓          |
 
-See the [Template Comparison](/docs/cli/template-comparison) for a detailed feature breakdown to help you choose.
+Pick **default** if you want everything available out of the box, **minimal** if you only need wallet connection and balances, or **defi** if you're building trading or DEX interfaces.
+
+- [Scaffolding Templates](/docs/cli/templates) — template reference and usage
+- [Template Comparison](/docs/cli/template-comparison) — full feature-by-feature breakdown
+
 ## How do I update an existing project?
 
 Run the upgrade command from the root of an existing Nextellar project. Start with a dry run so you can review template-file changes before applying them:
@@ -85,6 +93,7 @@ npx nextellar my-app --horizon-url https://horizon.stellar.org
 ```
 
 You can also update the Horizon URL in your project's environment configuration after scaffolding.
+
 ## Does Nextellar support Soroban smart contracts?
 
 Yes. The default scaffold includes Soroban-ready hooks such as `useSorobanContract` and `useSorobanEvents`, and the CLI exposes Soroban RPC configuration through `--soroban-url`. Use `--with-contracts` when you want contract-focused project files included during scaffolding.
@@ -129,6 +138,12 @@ Run `pnpm build:content` after adding or editing any MDX file and check the term
 4. Run `pnpm build:content` to process the new file.
 
 See [Add a New Docs Page](/docs/guides/add-docs-page) for a full walkthrough.
+
+## How do contributor bounties and Stellar Wave reward payouts work?
+
+Nextellar issues participate in the **Stellar Wave Program** managed via [Drips Network](https://www.drips.network/wave). Contributors apply to open bounty issues on GitHub, receive maintainer approval, and complete assignments before the cycle due date to earn Wave points.
+
+At the end of each monthly wave cycle, rewards from the dedicated pool are distributed on-chain via smart contracts directly to contributors' registered Stellar/EVM wallet addresses. Contributors can monitor point totals, distribution rounds, and inspect on-chain payout transaction hashes on the [Drips Wave Dashboard](https://www.drips.network/wave).
 
 ## Where can I get help?
 

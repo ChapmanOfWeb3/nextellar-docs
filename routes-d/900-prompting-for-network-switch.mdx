@@ -69,7 +69,8 @@ export function useNetworkGuard({ requiredNetwork }: UseNetworkSwitchProps) {
     return () => clearInterval(interval);
   }, [checkNetwork]);
 
-  const isMismatch = currentNetwork !== null && currentNetwork.toUpperCase() !== requiredNetwork;
+  const isMismatch =
+    currentNetwork !== null && currentNetwork.toUpperCase() !== requiredNetwork;
 
   return {
     currentNetwork,
@@ -79,9 +80,9 @@ export function useNetworkGuard({ requiredNetwork }: UseNetworkSwitchProps) {
   };
 }
 
-export const NetworkSwitchBanner: React.FC<{ requiredNetwork: SupportedNetwork }> = ({
-  requiredNetwork,
-}) => {
+export const NetworkSwitchBanner: React.FC<{
+  requiredNetwork: SupportedNetwork;
+}> = ({ requiredNetwork }) => {
   const { currentNetwork, isMismatch, isChecking, recheck } = useNetworkGuard({
     requiredNetwork,
   });
@@ -97,7 +98,15 @@ export const NetworkSwitchBanner: React.FC<{ requiredNetwork: SupportedNetwork }
         <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
         <div className="text-sm">
           <span className="font-semibold">Wrong Network Detected: </span>
-          Your wallet is on <code className="bg-amber-900/60 px-1.5 py-0.5 rounded text-amber-300 font-mono">{currentNetwork}</code>. Please switch to <code className="bg-amber-900/60 px-1.5 py-0.5 rounded text-amber-300 font-mono">{requiredNetwork}</code> in Freighter.
+          Your wallet is on{' '}
+          <code className="bg-amber-900/60 px-1.5 py-0.5 rounded text-amber-300 font-mono">
+            {currentNetwork}
+          </code>
+          . Please switch to{' '}
+          <code className="bg-amber-900/60 px-1.5 py-0.5 rounded text-amber-300 font-mono">
+            {requiredNetwork}
+          </code>{' '}
+          in Freighter.
         </div>
       </div>
 
@@ -106,7 +115,9 @@ export const NetworkSwitchBanner: React.FC<{ requiredNetwork: SupportedNetwork }
         disabled={isChecking}
         className="px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded text-xs font-medium flex items-center gap-1.5 transition-colors disabled:opacity-50"
       >
-        <RefreshCw className={`w-3.5 h-3.5 ${isChecking ? 'animate-spin' : ''}`} />
+        <RefreshCw
+          className={`w-3.5 h-3.5 ${isChecking ? 'animate-spin' : ''}`}
+        />
         Check Again
       </button>
     </div>

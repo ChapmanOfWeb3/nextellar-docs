@@ -14,14 +14,14 @@ Risk scoring helps a dApp decide when to allow, warn, slow down, or block a tran
 
 Start with features that can be computed from Horizon data and local app context:
 
-| Feature | Example threshold | Why it matters |
-| --- | --- | --- |
-| Account age | Less than 1,000 ledgers | Very new accounts are common in Sybil attempts |
-| Transaction velocity | More than 20 ops in 5 minutes | Automation often creates tight bursts |
-| Round amount ratio | More than 80% round amounts | Repeated round values may indicate scripted behavior |
-| Destination reuse | Same destination more than 5 times in 10 minutes | Can indicate farming or circular flows |
-| Asset mismatch | Unexpected asset for this flow | Catches wrong-token approvals or spoofed UI state |
-| Device or session signal | Same session, many wallets | Connects off-chain behavior to on-chain actions |
+| Feature                  | Example threshold                                | Why it matters                                       |
+| ------------------------ | ------------------------------------------------ | ---------------------------------------------------- |
+| Account age              | Less than 1,000 ledgers                          | Very new accounts are common in Sybil attempts       |
+| Transaction velocity     | More than 20 ops in 5 minutes                    | Automation often creates tight bursts                |
+| Round amount ratio       | More than 80% round amounts                      | Repeated round values may indicate scripted behavior |
+| Destination reuse        | Same destination more than 5 times in 10 minutes | Can indicate farming or circular flows               |
+| Asset mismatch           | Unexpected asset for this flow                   | Catches wrong-token approvals or spoofed UI state    |
+| Device or session signal | Same session, many wallets                       | Connects off-chain behavior to on-chain actions      |
 
 ## Scoring Model
 
@@ -46,13 +46,14 @@ export function scoreTransactionRisk(signals: RiskSignal[]): RiskScore {
     signals.reduce((total, signal) => total + signal.points, 0)
   );
 
-  const level = score >= 80
-    ? 'critical'
-    : score >= 60
-      ? 'high'
-      : score >= 30
-        ? 'medium'
-        : 'low';
+  const level =
+    score >= 80
+      ? 'critical'
+      : score >= 60
+        ? 'high'
+        : score >= 30
+          ? 'medium'
+          : 'low';
 
   return { score, level, signals };
 }
@@ -72,23 +73,43 @@ export function buildRiskSignals(input: {
   const signals: RiskSignal[] = [];
 
   if (input.accountAgeLedgers < 1000) {
-    signals.push({ id: 'new_account', points: 25, reason: 'Account is very new' });
+    signals.push({
+      id: 'new_account',
+      points: 25,
+      reason: 'Account is very new',
+    });
   }
 
   if (input.operationsInFiveMinutes > 20) {
-    signals.push({ id: 'high_velocity', points: 30, reason: 'High recent transaction velocity' });
+    signals.push({
+      id: 'high_velocity',
+      points: 30,
+      reason: 'High recent transaction velocity',
+    });
   }
 
   if (input.roundAmountRatio > 0.8) {
-    signals.push({ id: 'round_amounts', points: 10, reason: 'Mostly round-number amounts' });
+    signals.push({
+      id: 'round_amounts',
+      points: 10,
+      reason: 'Mostly round-number amounts',
+    });
   }
 
   if (input.repeatedDestinationCount > 5) {
-    signals.push({ id: 'destination_reuse', points: 20, reason: 'Destination reused repeatedly' });
+    signals.push({
+      id: 'destination_reuse',
+      points: 20,
+      reason: 'Destination reused repeatedly',
+    });
   }
 
   if (input.actualAsset !== input.expectedAsset) {
-    signals.push({ id: 'asset_mismatch', points: 40, reason: 'Unexpected asset for this flow' });
+    signals.push({
+      id: 'asset_mismatch',
+      points: 40,
+      reason: 'Unexpected asset for this flow',
+    });
   }
 
   return signals;
@@ -97,12 +118,12 @@ export function buildRiskSignals(input: {
 
 ## Thresholds and Actions
 
-| Score | Level | Suggested action |
-| --- | --- | --- |
-| 0-29 | Low | Allow silently |
-| 30-59 | Medium | Allow with monitoring or a soft warning |
-| 60-79 | High | Require an extra confirmation or slow the flow |
-| 80-100 | Critical | Block and send to review |
+| Score  | Level    | Suggested action                               |
+| ------ | -------- | ---------------------------------------------- |
+| 0-29   | Low      | Allow silently                                 |
+| 30-59  | Medium   | Allow with monitoring or a soft warning        |
+| 60-79  | High     | Require an extra confirmation or slow the flow |
+| 80-100 | Critical | Block and send to review                       |
 
 Treat thresholds as policy configuration, not hardcoded truth. Different dApps have different risk tolerance.
 

@@ -18,19 +18,23 @@ Working draft for the docs change requested in issue #964.
 ## Sections
 
 ### Why Run a Bug Bounty?
+
 - Smart contracts are immutable — prevention matters more than patching
 - Community incentives for responsible disclosure
 - Trust signal for users and auditors
 
 ### Defining Scope
+
 - In-scope: smart contracts, backend API, web frontend
 - Out-of-scope: third-party services, social engineering
 
 ### Payout Tiers
+
 - Critical / High / Medium / Low mapped to CVSS score ranges
 - Example XLM payout ranges
 
 ### Reporting Channels
+
 - Security email / GitHub Security Advisory
 - Disclosure timeline expectations
 

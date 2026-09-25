@@ -12,13 +12,13 @@ The `Keypair` class in `@stellar/stellar-sdk` represents a Stellar account's pub
 
 ## Common Helpers Summary
 
-| Helper Method | Description |
-| --- | --- |
-| `Keypair.random()` | Generates a new randomly generated cryptographic keypair. |
-| `Keypair.fromSecret(secretKey)` | Reconstructs a `Keypair` object from an encoded secret key string (`S...`). |
+| Helper Method                      | Description                                                                        |
+| ---------------------------------- | ---------------------------------------------------------------------------------- |
+| `Keypair.random()`                 | Generates a new randomly generated cryptographic keypair.                          |
+| `Keypair.fromSecret(secretKey)`    | Reconstructs a `Keypair` object from an encoded secret key string (`S...`).        |
 | `Keypair.fromPublicKey(publicKey)` | Creates a public-only `Keypair` object from an encoded public key string (`G...`). |
-| `keypair.publicKey()` | Returns the encoded public key address string (`G...`). |
-| `keypair.secret()` | Returns the encoded secret seed string (`S...`). Throws if secret is missing. |
+| `keypair.publicKey()`              | Returns the encoded public key address string (`G...`).                            |
+| `keypair.secret()`                 | Returns the encoded secret seed string (`S...`). Throws if secret is missing.      |
 
 ---
 
@@ -31,7 +31,7 @@ import { Keypair } from '@stellar/stellar-sdk';
 
 const pair = Keypair.random();
 console.log('Public Key:', pair.publicKey()); // G...
-console.log('Secret Key:', pair.secret());    // S...
+console.log('Secret Key:', pair.secret()); // S...
 ```
 
 ### 2. Loading Keypair from Secret Key

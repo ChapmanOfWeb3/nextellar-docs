@@ -28,13 +28,13 @@ A robust transaction UI moves through well-defined sequential states:
 
 ### Suggested State Visuals
 
-| State | Visual Indicator | Animation Pattern | Accessible Label |
-| --- | --- | --- | --- |
-| `signing` | Pulsing wallet icon | Soft pulse (scale 0.98 to 1.02) | "Waiting for wallet signature..." |
+| State        | Visual Indicator                 | Animation Pattern                      | Accessible Label                       |
+| ------------ | -------------------------------- | -------------------------------------- | -------------------------------------- |
+| `signing`    | Pulsing wallet icon              | Soft pulse (scale 0.98 to 1.02)        | "Waiting for wallet signature..."      |
 | `submitting` | Orbiting spinner or progress bar | Indeterminate rotation or linear slide | "Submitting transaction to Stellar..." |
-| `confirming` | Ripple effect around status icon | Radial expansion | "Confirming transaction on ledger..." |
-| `success` | Animated green checkmark | Scale up with spring / stroke draw | "Transaction confirmed successfully!" |
-| `error` | Shake animation + error alert | Horizontal shake (±6px) | "Transaction failed: [error details]" |
+| `confirming` | Ripple effect around status icon | Radial expansion                       | "Confirming transaction on ledger..."  |
+| `success`    | Animated green checkmark         | Scale up with spring / stroke draw     | "Transaction confirmed successfully!"  |
+| `error`      | Shake animation + error alert    | Horizontal shake (±6px)                | "Transaction failed: [error details]"  |
 
 ---
 
@@ -45,7 +45,9 @@ Always respect users' system motion preferences. For users with vestibular motio
 In Tailwind CSS, use `motion-reduce:animate-none` and `motion-reduce:transition-none`:
 
 ```html
-<div className="animate-spin motion-reduce:animate-none rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+<div
+  className="animate-spin motion-reduce:animate-none rounded-full h-8 w-8 border-b-2 border-emerald-500"
+/>
 ```
 
 ---
@@ -56,9 +58,21 @@ Below is a complete, accessible component that animates transaction state transi
 
 ```tsx
 import React from 'react';
-import { CheckCircle2, AlertCircle, Loader2, KeyRound, ArrowRight } from 'lucide-react';
+import {
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  KeyRound,
+  ArrowRight,
+} from 'lucide-react';
 
-export type TxStatus = 'idle' | 'signing' | 'submitting' | 'confirming' | 'success' | 'error';
+export type TxStatus =
+  | 'idle'
+  | 'signing'
+  | 'submitting'
+  | 'confirming'
+  | 'success'
+  | 'error';
 
 interface TransactionStatusCardProps {
   status: TxStatus;
@@ -115,8 +129,11 @@ export const TransactionStatusCard: React.FC<TransactionStatusCardProps> = ({
             {status === 'signing' && 'Please approve the prompt in Freighter.'}
             {status === 'submitting' && 'Waiting for Horizon ingestion...'}
             {status === 'confirming' && 'Waiting for ledger consensus...'}
-            {status === 'success' && txHash && `Hash: ${txHash.slice(0, 8)}...${txHash.slice(-8)}`}
-            {status === 'error' && (errorMessage || 'An error occurred during submission.')}
+            {status === 'success' &&
+              txHash &&
+              `Hash: ${txHash.slice(0, 8)}...${txHash.slice(-8)}`}
+            {status === 'error' &&
+              (errorMessage || 'An error occurred during submission.')}
           </p>
         </div>
       </div>

@@ -16,10 +16,12 @@ Working draft for the docs change requested in issue #972.
 ## Sections
 
 ### Who GDPR Applies To
+
 - Any dApp with EU users, regardless of where the team is based
 - Stellar's public ledger and the "right to erasure" tension
 
 ### Data Subject Rights
+
 - Right of access (Article 15)
 - Right to erasure (Article 17) — and its limits on-chain
 - Right to rectification (Article 16)
@@ -27,11 +29,13 @@ Working draft for the docs change requested in issue #972.
 - Right to object to processing (Article 21)
 
 ### Record Keeping (Article 30)
+
 - What a Record of Processing Activities (RoPA) must contain
 - Minimal RoPA template for a Stellar dApp
 
 ### Pre-Launch Compliance Checklist
 
 ## Acceptance Criteria
+
 - Builds with `pnpm build:content` without errors
 - Internal links pass `pnpm check:links`

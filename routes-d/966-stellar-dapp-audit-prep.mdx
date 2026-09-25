@@ -16,13 +16,13 @@ This tutorial outlines the artifact preparation workflow, reviewer expectations,
 
 Before handing over your codebase to security reviewers, assemble the following core artifacts in a dedicated `audit/` folder or repository branch:
 
-| Artifact | File / Location | Description |
-| --- | --- | --- |
-| **Reproducible WASM Builds** | `target/wasm32-unknown-unknown/release/*.wasm` | Pre-compiled WASM binaries matching target commit hash |
-| **WASM Hash Verification** | `sha256sum target/.../*.wasm` | Exact SHA-256 hashes of compiled contract binaries |
-| **Architecture Specification** | `docs/architecture.md` | Threat model, actor roles, state machine, and data flow diagrams |
-| **Test Suite & Coverage** | `cargo test`, `vitest run` | Automated test suite with coverage report ($>90\%$ target) |
-| **Deployment Scripts** | `scripts/deploy.ts` / `soroban contract deploy` | Exact initialization sequence, admin keys, and parameter values |
+| Artifact                       | File / Location                                 | Description                                                      |
+| ------------------------------ | ----------------------------------------------- | ---------------------------------------------------------------- |
+| **Reproducible WASM Builds**   | `target/wasm32-unknown-unknown/release/*.wasm`  | Pre-compiled WASM binaries matching target commit hash           |
+| **WASM Hash Verification**     | `sha256sum target/.../*.wasm`                   | Exact SHA-256 hashes of compiled contract binaries               |
+| **Architecture Specification** | `docs/architecture.md`                          | Threat model, actor roles, state machine, and data flow diagrams |
+| **Test Suite & Coverage**      | `cargo test`, `vitest run`                      | Automated test suite with coverage report ($>90\%$ target)       |
+| **Deployment Scripts**         | `scripts/deploy.ts` / `soroban contract deploy` | Exact initialization sequence, admin keys, and parameter values  |
 
 ---
 

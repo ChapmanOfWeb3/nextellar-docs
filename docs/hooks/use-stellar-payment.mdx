@@ -9,7 +9,8 @@ date: 2026-06-02
 The `useStellarPayment` hook provides advanced utilities for building, signing, and submitting Stellar payment transactions. It offers more control than `useStellarWallet.sendPayment()` with separate methods for each step of the payment flow.
 
 <Note>
-  **Ships in:** default, js<br/>
+  **Ships in:** default, js
+  <br />
   Not in your scaffold? Run `nextellar add payments`
 </Note>
 
@@ -339,12 +340,13 @@ if (!confirmed) return;
 - [`useStellarWallet`](/docs/hooks/use-stellar-wallet) - Simple wallet connection and payments
 - [`useTransactionHistory`](/docs/hooks/use-transaction-history) - View payment history
 - [`useStellarBalances`](/docs/hooks/use-stellar-balances) - Check balances before sending
+- [`useTrustlines`](/docs/hooks/use-trustlines#adding-and-removing-a-trustline) - Add or remove a trustline before sending custom assets; its example submits via `submitSignedXDR`
 
 ## Next Steps
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 my-6">
   <a
-    href="/hooks/use-stellar-wallet"
+    href="/docs/hooks/use-stellar-wallet"
     className="block p-4 border rounded-lg hover:border-primary transition-colors"
   >
     <h4 className="font-semibold mb-2">useStellarWallet</h4>
@@ -352,7 +354,7 @@ if (!confirmed) return;
   </a>
 
   <a
-    href="/guides/payment-flows"
+    href="/docs/guides/transaction-lifecycle"
     className="block p-4 border rounded-lg hover:border-primary transition-colors"
   >
     <h4 className="font-semibold mb-2">Payment Flows Guide</h4>

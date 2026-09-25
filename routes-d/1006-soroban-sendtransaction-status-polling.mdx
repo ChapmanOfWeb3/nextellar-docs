@@ -12,12 +12,12 @@ Soroban RPC's `sendTransaction` returns as soon as the node has accepted (or rej
 
 `sendTransaction` itself returns one of:
 
-| Status | Meaning |
-| --- | --- |
-| `PENDING` | Accepted and relayed to the network — poll `getTransaction` for the outcome. |
-| `DUPLICATE` | An identical transaction was already submitted; treat it the same as `PENDING` and poll the same hash. |
-| `TRY_AGAIN_LATER` | The node's submission queue is full — back off and resubmit the same signed envelope. |
-| `ERROR` | Rejected outright (for example a malformed envelope); nothing to poll for. |
+| Status            | Meaning                                                                                                |
+| ----------------- | ------------------------------------------------------------------------------------------------------ |
+| `PENDING`         | Accepted and relayed to the network — poll `getTransaction` for the outcome.                           |
+| `DUPLICATE`       | An identical transaction was already submitted; treat it the same as `PENDING` and poll the same hash. |
+| `TRY_AGAIN_LATER` | The node's submission queue is full — back off and resubmit the same signed envelope.                  |
+| `ERROR`           | Rejected outright (for example a malformed envelope); nothing to poll for.                             |
 
 Once `sendTransaction` returns `PENDING` (or `DUPLICATE`), the hash transitions through `getTransaction` statuses:
 
@@ -65,7 +65,9 @@ async function submitAndConfirm(
     // still NOT_FOUND — check the ledger-based timeout before waiting and retrying
     const { sequence: currentLedger } = await server.getLatestLedger();
     if (currentLedger - startLedger > timeoutLedgers) {
-      throw new Error(`Transaction ${sendResult.hash} expired after ${timeoutLedgers} ledgers`);
+      throw new Error(
+        `Transaction ${sendResult.hash} expired after ${timeoutLedgers} ledgers`
+      );
     }
 
     await new Promise((resolve) => setTimeout(resolve, pollIntervalMs));

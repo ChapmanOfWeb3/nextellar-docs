@@ -17,20 +17,24 @@ Working draft for the docs change requested in issue #949.
 ## Sections
 
 ### Why Mock Horizon?
+
 - Deterministic responses without network latency
 - Offline development
 - Reproducible CI test scenarios
 
 ### Endpoint Fidelity
+
 - Which Horizon REST endpoints are covered
 - Known omissions and workarounds
 
 ### Fixture Management
+
 - Loading test accounts via friendbot equivalent
 - Seeding transactions and ledger state
 - Resetting state between test runs
 
 ### Working Sample
+
 - Pointing the SDK at a local mock server
 - Running a basic account fetch
 

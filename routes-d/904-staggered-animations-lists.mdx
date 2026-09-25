@@ -102,12 +102,12 @@ You can also handle it purely in CSS with a media query if you're not using fram
 
 Staggers degrade quickly as lists grow. Follow these caps:
 
-| Constraint | Recommended limit | Why |
-|---|---|---|
-| Per-item delay | ≤ 60–80 ms | Above this, users wait on items they can already see |
-| Total sequence | ≤ 400–500 ms end-to-end | Longer feels sluggish, not polished |
-| Max staggered items | ~8–10 | Cap the effect; render the rest immediately |
-| Re-triggers | Once per mount | Don't re-run on filter/sort changes |
+| Constraint          | Recommended limit       | Why                                                  |
+| ------------------- | ----------------------- | ---------------------------------------------------- |
+| Per-item delay      | ≤ 60–80 ms              | Above this, users wait on items they can already see |
+| Total sequence      | ≤ 400–500 ms end-to-end | Longer feels sluggish, not polished                  |
+| Max staggered items | ~8–10                   | Cap the effect; render the rest immediately          |
+| Re-triggers         | Once per mount          | Don't re-run on filter/sort changes                  |
 
 For lists longer than the cap, apply the stagger to the first N items only:
 

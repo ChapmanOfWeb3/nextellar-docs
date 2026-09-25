@@ -9,12 +9,13 @@ date: 2026-06-02
 The `useTransactionHistory` hook fetches and paginates a Stellar account's operation or payment history from Horizon, using cursor-based pagination.
 
 <Note type="info">
-  This hook ships in the `default` and `js` templates. It is not currently included in the
-  `minimal` or `defi` templates.
+  This hook ships in the `default` and `js` templates. It is not currently
+  included in the `minimal` or `defi` templates.
 </Note>
 
 <Note>
-  **Ships in:** default, js<br/>
+  **Ships in:** default, js
+  <br />
   Not in your scaffold? Run `nextellar add history`
 </Note>
 
@@ -31,11 +32,13 @@ The `useTransactionHistory` hook fetches and paginates a Stellar account's opera
 ```tsx
 import { useTransactionHistory } from '@/hooks/useTransactionHistory';
 
-export default function TransactionHistoryList({ publicKey }: { publicKey?: string }) {
-  const { items, loading, error, fetchNextPage, hasMore, refresh } = useTransactionHistory(
-    publicKey,
-    { pageSize: 20, type: 'payments' }
-  );
+export default function TransactionHistoryList({
+  publicKey,
+}: {
+  publicKey?: string;
+}) {
+  const { items, loading, error, fetchNextPage, hasMore, refresh } =
+    useTransactionHistory(publicKey, { pageSize: 20, type: 'payments' });
 
   if (loading && items.length === 0) return <div>Loading...</div>;
   if (error) {
@@ -76,12 +79,12 @@ useTransactionHistory(
 ): TransactionHistoryState
 ```
 
-| Parameter    | Type                          | Default                       | Description                                                          |
-| ------------ | ----------------------------- | ------------------------------ | --------------------------------------------------------------------- |
-| `publicKey`  | `string \| null`               | none                            | Account to fetch history for. While omitted, `items` stays empty.    |
-| `horizonUrl` | `string`                       | Provider's `horizonUrl`, else Testnet | Horizon endpoint to query.                                     |
-| `pageSize`   | `number`                       | `10`                            | Records requested per page.                                          |
-| `type`       | `'payments' \| 'operations'`   | `'operations'`                  | Fetch payment-only records or all account operations.                |
+| Parameter    | Type                         | Default                               | Description                                                       |
+| ------------ | ---------------------------- | ------------------------------------- | ----------------------------------------------------------------- |
+| `publicKey`  | `string \| null`             | none                                  | Account to fetch history for. While omitted, `items` stays empty. |
+| `horizonUrl` | `string`                     | Provider's `horizonUrl`, else Testnet | Horizon endpoint to query.                                        |
+| `pageSize`   | `number`                     | `10`                                  | Records requested per page.                                       |
+| `type`       | `'payments' \| 'operations'` | `'operations'`                        | Fetch payment-only records or all account operations.             |
 
 ### Return Value
 
@@ -104,6 +107,52 @@ interface TransactionHistoryState {
 - Records are always returned newest first; there is no configurable sort order.
 
 ## Examples
+
+### Pagination
+
+Render the current page and let the user request the next cursor only when Horizon reports that more records are available:
+
+```tsx
+import { useTransactionHistory } from '@/hooks/useTransactionHistory';
+
+export function PaginatedHistory({ publicKey }: { publicKey?: string }) {
+  const { items, loading, error, fetchNextPage, hasMore, refresh } =
+    useTransactionHistory(publicKey, { pageSize: 20, type: 'payments' });
+
+  if (error) {
+    return (
+      <div>
+        <p role="alert">Unable to load transactions: {error.message}</p>
+        <button type="button" onClick={() => void refresh()}>
+          Try again
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <section>
+      <ul>
+        {items.map((item) => (
+          <li key={item.id}>
+            {item.type} - {new Date(item.created_at).toLocaleString()}
+          </li>
+        ))}
+      </ul>
+      {hasMore && (
+        <button
+          type="button"
+          onClick={() => void fetchNextPage()}
+          disabled={loading}
+        >
+          {loading ? 'Loading...' : 'Load more'}
+        </button>
+      )}
+      {!loading && items.length === 0 && <p>No transactions found.</p>}
+    </section>
+  );
+}
+```
 
 ### Filter by Record Type
 
@@ -181,3 +230,4 @@ if (error) {
 
 - [`useStellarWallet`](/docs/hooks/use-stellar-wallet) - Send transactions
 - [`useStellarPayment`](/docs/hooks/use-stellar-payment) - Build transactions
+- [`useOfferBook`](/docs/hooks/use-offer-book) - Query DEX activity

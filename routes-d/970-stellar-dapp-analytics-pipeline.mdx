@@ -121,7 +121,9 @@ export class StellarAnalyticsPipeline {
   public async ingestEvents(events: AnalyticsEvent[]): Promise<void> {
     for (const evt of events) {
       // In production, execute batch INSERT INTO analytics_events ... ON CONFLICT DO NOTHING
-      console.log(`[Analytics] Ingested event ${evt.eventId} (${evt.eventType})`);
+      console.log(
+        `[Analytics] Ingested event ${evt.eventId} (${evt.eventType})`
+      );
     }
   }
 }

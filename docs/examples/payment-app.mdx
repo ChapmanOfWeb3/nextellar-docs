@@ -4,6 +4,7 @@ description: Build a complete Stellar payment application with Nextellar
 date: 2026-06-02
 tested_with_cli_version: '1.0.4'
 tested_with_node_version: '20.18.0'
+tags: [payments, wallet, complete-app, testnet]
 ---
 
 # Payment Application Example
@@ -341,6 +342,415 @@ Or deploy to Vercel:
 ```bash
 vercel deploy
 ```
+
+## Error Handling
+
+This section covers common failure paths and how to handle them gracefully in your payment application.
+
+### Common Error Types
+
+| Error Category           | Typical Cause                                      | User Action                                  |
+| ------------------------ | -------------------------------------------------- | -------------------------------------------- |
+| **Wallet Not Connected** | User hasn't connected wallet or connection dropped | Prompt to connect wallet                     |
+| **Insufficient Balance** | Not enough XLM for payment + fees                  | Show balance, suggest funding from Friendbot |
+| **Invalid Recipient**    | Malformed address or wrong network                 | Validate address format (G..., 56 chars)     |
+| **Transaction Rejected** | User declined in wallet                            | Inform user, allow retry                     |
+| **Network Error**        | Horizon/RPC unavailable                            | Retry with backoff, show status              |
+| **Trustline Missing**    | Sending custom asset without trustline             | Guide to establish trustline first           |
+
+### Error Handling in Code
+
+The `sendPayment` hook throws errors that you can catch and categorize:
+
+```tsx
+import { useStellarWallet } from '@/hooks/useStellarWallet';
+
+function PaymentForm() {
+  const { sendPayment, balances } = useStellarWallet();
+  const [error, setError] = useState<Error | null>(null);
+
+  const handleSend = async (params: PaymentParams) => {
+    setError(null);
+    try {
+      await sendPayment(params);
+    } catch (err) {
+      const categorized = categorizeError(err);
+      setError(categorized);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSend}>
+      {/* form fields */}
+      {error && <ErrorDisplay error={error} />}
+    </form>
+  );
+}
+
+function categorizeError(err: unknown): AppError {
+  const message = err instanceof Error ? err.message : String(err);
+
+  // Wallet connection errors
+  if (message.includes('wallet') || message.includes('connect')) {
+    return {
+      type: 'wallet',
+      message: 'Wallet not connected. Please connect your wallet first.',
+    };
+  }
+
+  // Insufficient balance
+  if (message.includes('insufficient') || message.includes('balance')) {
+    return {
+      type: 'balance',
+      message:
+        'Insufficient XLM balance. You need at least 1 XLM reserve + fee.',
+    };
+  }
+
+  // Invalid address
+  if (message.includes('invalid') || message.includes('address')) {
+    return {
+      type: 'address',
+      message:
+        'Invalid recipient address. Must be a valid Stellar public key (G..., 56 characters).',
+    };
+  }
+
+  // User rejected
+  if (
+    message.includes('reject') ||
+    message.includes('cancel') ||
+    message.includes('denied')
+  ) {
+    return {
+      type: 'rejected',
+      message:
+        'Transaction was rejected. Please approve the transaction in your wallet.',
+    };
+  }
+
+  // Network issues
+  if (
+    message.includes('network') ||
+    message.includes('timeout') ||
+    message.includes('fetch')
+  ) {
+    return {
+      type: 'network',
+      message: 'Network error. Please check your connection and try again.',
+    };
+  }
+
+  // Trustline missing
+  if (message.includes('trustline') || message.includes('change trust')) {
+    return {
+      type: 'trustline',
+      message:
+        'Missing trustline for this asset. Please establish a trustline first.',
+    };
+  }
+
+  return {
+    type: 'unknown',
+    message: 'An unexpected error occurred. Please try again.',
+  };
+}
+
+interface AppError {
+  type:
+    | 'wallet'
+    | 'balance'
+    | 'address'
+    | 'rejected'
+    | 'network'
+    | 'trustline'
+    | 'unknown';
+  message: string;
+}
+
+function ErrorDisplay({ error }: { error: AppError }) {
+  const recoveryActions: Record<AppError['type'], React.ReactNode> = {
+    wallet: <WalletConnectButton />,
+    balance: (
+      <a
+        href="https://laboratory.stellar.org/#account-creator"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Get Testnet XLM ↗
+      </a>
+    ),
+    address: <p>Double-check the recipient address format.</p>,
+    rejected: <button onClick={() => setError(null)}>Try Again</button>,
+    network: <button onClick={() => handleSend(params)}>Retry</button>,
+    trustline: (
+      <a
+        href="/docs/hooks/use-trustlines"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Learn about trustlines ↗
+      </a>
+    ),
+    unknown: <button onClick={() => handleSend(params)}>Retry</button>,
+  };
+
+  return (
+    <div
+      className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md"
+      role="alert"
+    >
+      <p className="text-sm font-medium text-red-800 dark:text-red-200 mb-2">
+        {error.message}
+      </p>
+      <div className="text-sm text-red-700 dark:text-red-300">
+        {recoveryActions[error.type]}
+      </div>
+    </div>
+  );
+}
+```
+
+### Validation Best Practices
+
+#### Client-Side Validation
+
+Validate before submitting to avoid unnecessary wallet prompts:
+
+```tsx
+function validatePayment(params: PaymentParams): string | null {
+  // Check wallet connected
+  if (!connected) return 'Please connect your wallet first';
+
+  // Validate recipient
+  if (!params.to || !/^G[A-Z0-9]{55}$/.test(params.to)) {
+    return 'Invalid recipient address';
+  }
+
+  // Validate amount
+  const amount = parseFloat(params.amount);
+  if (isNaN(amount) || amount <= 0) {
+    return 'Amount must be greater than 0';
+  }
+
+  // Check sufficient balance (including fee)
+  const required = amount + 0.00001; // base fee
+  const available = parseFloat(xlmBalance);
+  if (available < required) {
+    return `Insufficient balance. Need ${required} XLM, have ${available} XLM`;
+  }
+
+  // Memo length
+  if (params.memo && params.memo.length > 28) {
+    return 'Memo exceeds 28 characters';
+  }
+
+  return null;
+}
+```
+
+#### Server-Side Validation (API Routes)
+
+If you build an API layer, validate again server-side:
+
+```tsx
+// app/api/payments/route.ts
+export async function POST(request: Request) {
+  const { to, amount, asset, memo } = await request.json();
+
+  // Validate address
+  if (!StrKey.isValidEd25519PublicKey(to)) {
+    return NextResponse.json({ error: 'Invalid address' }, { status: 400 });
+  }
+
+  // Validate amount
+  const amt = parseFloat(amount);
+  if (isNaN(amt) || amt <= 0) {
+    return NextResponse.json({ error: 'Invalid amount' }, { status: 400 });
+  }
+
+  // Validate memo
+  if (memo && memo.length > 28) {
+    return NextResponse.json({ error: 'Memo too long' }, { status: 400 });
+  }
+
+  // Process payment...
+}
+```
+
+### Error Recovery Strategies
+
+#### 1. Automatic Retry with Exponential Backoff
+
+```tsx
+async function sendWithRetry(
+  params: PaymentParams,
+  maxRetries = 3
+): Promise<TxResult> {
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await sendPayment(params);
+    } catch (err) {
+      const categorized = categorizeError(err);
+
+      // Don't retry user rejections or validation errors
+      if (['rejected', 'address', 'balance'].includes(categorized.type)) {
+        throw err;
+      }
+
+      if (attempt === maxRetries) throw err;
+
+      // Exponential backoff: 1s, 2s, 4s
+      await new Promise((r) => setTimeout(r, 1000 * Math.pow(2, attempt - 1)));
+    }
+  }
+}
+```
+
+#### 2. Optimistic UI with Rollback
+
+```tsx
+const [pendingTx, setPendingTx] = useState<PaymentParams | null>(null);
+
+const handleSend = async (params: PaymentParams) => {
+  setPendingTx(params); // Show pending state immediately
+  try {
+    const result = await sendPayment(params);
+    setPendingTx(null);
+    setTxHash(result.hash);
+  } catch (err) {
+    setPendingTx(null); // Rollback
+    setError(categorizeError(err));
+  }
+};
+
+// In render:
+{
+  pendingTx && (
+    <div className="bg-yellow-50 border-yellow-200 p-4 rounded">
+      <p>Processing payment of {pendingTx.amount} XLM...</p>
+    </div>
+  );
+}
+```
+
+#### 3. Offline Queue
+
+Queue payments when offline, send when reconnected:
+
+```tsx
+const [offlineQueue, setOfflineQueue] = useState<PaymentParams[]>([]);
+
+const handleSend = async (params: PaymentParams) => {
+  if (!navigator.onLine) {
+    setOfflineQueue((prev) => [...prev, params]);
+    setError({
+      type: 'network',
+      message: 'Offline. Payment queued for when connection returns.',
+    });
+    return;
+  }
+  // ... normal send logic
+};
+
+// Process queue when online
+useEffect(() => {
+  const handleOnline = async () => {
+    for (const params of offlineQueue) {
+      try {
+        await sendPayment(params);
+      } catch {
+        /* keep in queue */
+      }
+    }
+    setOfflineQueue([]);
+  };
+
+  window.addEventListener('online', handleOnline);
+  return () => window.removeEventListener('online', handleOnline);
+}, [offlineQueue]);
+```
+
+### Testing Error Scenarios
+
+Test your error handling with these scenarios:
+
+```tsx
+// __tests__/PaymentForm.test.tsx
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { PaymentForm } from '@/components/PaymentForm';
+import { useStellarWallet } from '@/hooks/useStellarWallet';
+
+vi.mock('@/hooks/useStellarWallet');
+
+describe('PaymentForm Error Handling', () => {
+  it('shows wallet error when not connected', async () => {
+    vi.mocked(useStellarWallet).mockReturnValue({
+      connected: false,
+      sendPayment: vi.fn(),
+    });
+
+    render(<PaymentForm />);
+    fireEvent.click(screen.getByText('Send Payment'));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          'Wallet not connected. Please connect your wallet first.'
+        )
+      ).toBeInTheDocument();
+    });
+  });
+
+  it('shows balance error for insufficient funds', async () => {
+    vi.mocked(useStellarWallet).mockReturnValue({
+      connected: true,
+      balances: [{ asset_type: 'native', balance: '0.5' }],
+      sendPayment: vi.fn().mockRejectedValue(new Error('insufficient balance')),
+    });
+
+    render(<PaymentForm />);
+    // ... fill form and submit
+    await waitFor(() => {
+      expect(screen.getByText(/Insufficient XLM balance/)).toBeInTheDocument();
+    });
+  });
+
+  it('shows address error for invalid recipient', async () => {
+    vi.mocked(useStellarWallet).mockReturnValue({
+      connected: true,
+      sendPayment: vi.fn().mockRejectedValue(new Error('invalid address')),
+    });
+
+    render(<PaymentForm />);
+    // ... fill form with invalid address
+    await waitFor(() => {
+      expect(screen.getByText(/Invalid recipient address/)).toBeInTheDocument();
+    });
+  });
+});
+```
+
+### Production Monitoring
+
+Log errors for observability:
+
+```tsx
+function logError(error: AppError, context: Record<string, unknown>) {
+  console.error('[PaymentError]', {
+    type: error.type,
+    message: error.message,
+    timestamp: new Date().toISOString(),
+    userAgent: navigator.userAgent,
+    ...context,
+  });
+
+  // Send to monitoring service (Sentry, Datadog, etc.)
+  // Sentry.captureException(new Error(error.message), { tags: { type: error.type }, extra: context });
+}
+```
+
+---
 
 ## Troubleshooting
 

@@ -409,12 +409,12 @@ nextellar upgrade --check
 
 **Difference from `--dry-run`:**
 
-| | `--dry-run` | `--check` |
-|---|---|---|
-| Shows file diff | ✅ | ✅ |
-| Shows changelog/upgrade notes | ❌ | ✅ |
-| Non-zero exit when updates exist | ❌ | ✅ |
-| Suitable for CI gate | No | **Yes** |
+|                                  | `--dry-run` | `--check` |
+| -------------------------------- | ----------- | --------- |
+| Shows file diff                  | ✅          | ✅        |
+| Shows changelog/upgrade notes    | ❌          | ✅        |
+| Non-zero exit when updates exist | ❌          | ✅        |
+| Suitable for CI gate             | No          | **Yes**   |
 
 Use `--check` in CI to fail a pipeline when the project is behind the latest template:
 
@@ -616,5 +616,5 @@ nextellar ../my-app       # Path traversal not allowed
 
 - [CLI Commands](/docs/cli/commands) - Command reference
 - [Configuration](/docs/cli/configuration) - Project configuration
-- [Troubleshooting](/docs/troubleshooting/installation-issues) - Common issues
+- [Troubleshooting](/docs/troubleshooting/common-error-messages) - Common issues
 ````

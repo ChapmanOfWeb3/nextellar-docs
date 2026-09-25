@@ -16,12 +16,12 @@ A Stellar dApp handles two fundamentally different types of data: on-chain data 
 
 ### Category 1 — On-chain data (always public)
 
-| Data item | Where it lives | Who can see it |
-|-----------|---------------|----------------|
-| User's Stellar public key | Stellar ledger | Anyone |
-| Transaction history | Stellar ledger | Anyone |
-| Smart contract state | Stellar ledger | Anyone |
-| Asset balances | Stellar ledger | Anyone |
+| Data item                 | Where it lives | Who can see it |
+| ------------------------- | -------------- | -------------- |
+| User's Stellar public key | Stellar ledger | Anyone         |
+| Transaction history       | Stellar ledger | Anyone         |
+| Smart contract state      | Stellar ledger | Anyone         |
+| Asset balances            | Stellar ledger | Anyone         |
 
 On-chain data is immutable and permanently public. You cannot delete it, and neither can the user. Your privacy documentation must make this clear to users before they connect a wallet.
 
@@ -29,13 +29,13 @@ On-chain data is immutable and permanently public. You cannot delete it, and nei
 
 ### Category 2 — Off-chain identifiable data
 
-| Data item | Where it lives | Sensitivity |
-|-----------|---------------|-------------|
-| Email address | Your database | High |
-| IP address (from API calls) | Server logs | Medium |
-| Name or username | Your database | Medium |
-| Payment information (if any) | Payment processor | High |
-| Support ticket content | Helpdesk system | Medium–High |
+| Data item                    | Where it lives    | Sensitivity |
+| ---------------------------- | ----------------- | ----------- |
+| Email address                | Your database     | High        |
+| IP address (from API calls)  | Server logs       | Medium      |
+| Name or username             | Your database     | Medium      |
+| Payment information (if any) | Payment processor | High        |
+| Support ticket content       | Helpdesk system   | Medium–High |
 
 This is the data that most privacy regulations (GDPR, CCPA, LGPD) focus on. You control it, so you are responsible for protecting it and honouring deletion requests.
 
@@ -43,11 +43,11 @@ This is the data that most privacy regulations (GDPR, CCPA, LGPD) focus on. You 
 
 ### Category 3 — Off-chain non-identifiable data
 
-| Data item | Where it lives | Sensitivity |
-|-----------|---------------|-------------|
-| Aggregate page-view counts | Analytics platform | Low |
-| Anonymised event data | Analytics platform | Low |
-| Error traces without PII | Error-tracking tool | Low |
+| Data item                  | Where it lives      | Sensitivity |
+| -------------------------- | ------------------- | ----------- |
+| Aggregate page-view counts | Analytics platform  | Low         |
+| Anonymised event data      | Analytics platform  | Low         |
+| Error traces without PII   | Error-tracking tool | Low         |
 
 This data cannot be linked to a specific natural person after anonymisation. It has minimal regulatory risk but should still be documented.
 
@@ -64,15 +64,15 @@ When a user connects a Stellar wallet (Freighter, Albedo, xBull, Rabet), the wal
 
 ## Retention Rules
 
-| Category | Recommended retention | Deletion trigger |
-|----------|-----------------------|-----------------|
-| Email address | Until user deletes account | User request or account closure |
-| IP address logs | 30–90 days | Automated log rotation |
-| Support tickets | 3 years | User request (anonymise rather than delete where legal obligations apply) |
-| Analytics (identifiable) | Anonymise after 12 months | Automated anonymisation job |
-| Analytics (anonymised) | Indefinite | N/A |
-| JWT / session tokens | Expire within 24 hours | Automatic expiry |
-| On-chain data | N/A — immutable | Cannot be deleted |
+| Category                 | Recommended retention      | Deletion trigger                                                          |
+| ------------------------ | -------------------------- | ------------------------------------------------------------------------- |
+| Email address            | Until user deletes account | User request or account closure                                           |
+| IP address logs          | 30–90 days                 | Automated log rotation                                                    |
+| Support tickets          | 3 years                    | User request (anonymise rather than delete where legal obligations apply) |
+| Analytics (identifiable) | Anonymise after 12 months  | Automated anonymisation job                                               |
+| Analytics (anonymised)   | Indefinite                 | N/A                                                                       |
+| JWT / session tokens     | Expire within 24 hours     | Automatic expiry                                                          |
+| On-chain data            | N/A — immutable            | Cannot be deleted                                                         |
 
 ### Implementing log rotation
 
@@ -145,28 +145,34 @@ Use this as a starting structure. Fill in the bracketed placeholders and have an
 ## Data We Collect and Why
 
 ### What we collect
-| Data | Why we collect it | Retention |
-|------|-------------------|-----------|
-| Email address | Account creation, transactional emails | Until account deletion |
-| IP address | Security, abuse prevention | 30 days (log rotation) |
-| Stellar public key | Wallet connection, display | Until account deletion |
+
+| Data               | Why we collect it                      | Retention              |
+| ------------------ | -------------------------------------- | ---------------------- |
+| Email address      | Account creation, transactional emails | Until account deletion |
+| IP address         | Security, abuse prevention             | 30 days (log rotation) |
+| Stellar public key | Wallet connection, display             | Until account deletion |
 
 ### What we do not collect
+
 - Your Stellar private key. It never leaves your wallet extension.
 - Payment card numbers (we do not process payments directly).
 
 ### On-chain data
+
 Transactions you submit through [dApp name] are recorded on the Stellar public ledger and cannot be deleted by us or by you. Do not submit transactions you wish to keep private.
 
 ### Third-party services
+
 - **Horizon API** ([Stellar Development Foundation](https://stellar.org/privacy)): used for account queries and transaction submission.
 - **Soroban RPC** (see your provider's policy): used for smart contract calls.
 - **[Analytics tool]** ([link to their policy]): used for aggregate usage analytics.
 
 ## Your Rights
+
 You may request access to, correction of, or deletion of your identifiable data at any time by emailing [contact@example.com]. We will respond within 30 days. Note that on-chain data cannot be deleted.
 
 ## Changes to This Policy
+
 We will notify registered users by email and post a notice in the app at least 14 days before material changes take effect.
 ```
 

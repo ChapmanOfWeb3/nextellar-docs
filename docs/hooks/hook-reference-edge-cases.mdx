@@ -500,6 +500,101 @@ export function useTransactionHistory(
 
 ---
 
+## Additional Edge Cases
+
+These cases come up in real apps once hooks are combined, and they are not tied to one hook's signature. Each one lists the symptom, why it happens, and how to mitigate it.
+
+### 1. Trustline Removal With a Non-Zero Balance (`useTrustlines`)
+
+**Symptom:** Submitting a change-trust with `limit: '0'` fails with `op_invalid_limit`.
+
+**Cause:** Stellar only deletes a trustline once the account's balance for that asset is exactly `0`. Open DEX offers that sell the asset (or buying liabilities against it) also block removal.
+
+**Mitigation:** Disable the remove action until the balance is `0`, and tell the user to send, swap, or burn the remainder first. Cancel any open offers for the asset before removing it.
+
+```tsx
+const tl = trustlines.find(
+  (t) => t.asset_code === code && t.asset_issuer === issuer
+);
+const canRemove = !!tl && Number(tl.balance ?? '0') === 0;
+
+<button disabled={!canRemove} onClick={() => removeTrustline(code, issuer)}>
+  Remove {code}
+</button>;
+```
+
+### 2. Stale Sequence Number After Concurrent Submits (`useStellarPayment`, `useTrustlines`)
+
+**Symptom:** The second of two transactions built back-to-back fails with `tx_bad_seq`.
+
+**Cause:** Each `build*XDR` call loads the account and reads its current sequence number. If two XDRs are built before the first one lands, both use the same sequence number, and only the first can succeed.
+
+**Mitigation:** Serialize submissions per account. Build the next XDR only after the previous one is confirmed, and on `tx_bad_seq` rebuild (don't resubmit) the transaction so it picks up the fresh sequence number.
+
+```tsx
+const queue = useRef(Promise.resolve());
+
+const enqueue = (task: () => Promise<void>) => {
+  queue.current = queue.current.then(task, task);
+  return queue.current;
+};
+
+// Each task builds, signs, and submits one transaction in order.
+enqueue(async () => {
+  const xdr = await buildPaymentXDR({ from, to, amount, asset: 'XLM' });
+  const signed = await sign(xdr);
+  await submitSignedXDR(signed);
+});
+```
+
+### 3. Transaction Expired While Waiting for a Signature (`useStellarPayment`, `useSorobanContract`)
+
+**Symptom:** Submission fails with `tx_too_late` after the user left the wallet popup open for a while.
+
+**Cause:** Built transactions carry a time bound. If the user takes longer than that window to approve, the signed XDR has already expired by the time it reaches the network.
+
+**Mitigation:** Treat `tx_too_late` as recoverable. Rebuild the XDR and ask for a fresh signature instead of showing a generic failure. Build as late as possible, immediately before opening the wallet prompt, not when the form first renders.
+
+```tsx
+const result = await submitSignedXDR(signed);
+if (!result.success && result.error?.includes('tx_too_late')) {
+  setStatus('The signature expired. Please approve the transaction again.');
+  return retryFromBuild();
+}
+```
+
+### 4. Network Switch With Cached Data (`useStellarBalances`, `useTrustlines`, `useTransactionHistory`)
+
+**Symptom:** After switching `WalletProvider` from Testnet to Mainnet, the UI briefly shows Testnet balances, trustlines, or history next to Mainnet account details.
+
+**Cause:** Hooks keep their last successful result until the next fetch resolves. Changing `horizonUrl` triggers a refetch but doesn't clear the previous network's data first.
+
+**Mitigation:** Key data-owning components by network so React remounts them with empty state, and pass `network` explicitly to hooks that build transactions (`useTrustlines` does not inherit it from the provider).
+
+```tsx
+<AccountPanel key={network} publicKey={publicKey} network={network} />
+```
+
+### 5. Missed Events Across a Polling Gap (`useSorobanEvents`)
+
+**Symptom:** After the tab has been in the background, or the device slept, some contract events never appear in the list.
+
+**Cause:** Browsers throttle timers in background tabs, and Soroban RPC only keeps events for a limited ledger window. If the gap between polls is longer than that window, the old cursor points to events that have already been pruned.
+
+**Mitigation:** Refresh when the page becomes visible again. If the hook reports a recovery or cursor error, reconcile from contract state (for example, re-read balances with `useSorobanContract`) instead of relying on the event stream alone.
+
+```tsx
+useEffect(() => {
+  const onVisible = () => {
+    if (document.visibilityState === 'visible') refresh();
+  };
+  document.addEventListener('visibilitychange', onVisible);
+  return () => document.removeEventListener('visibilitychange', onVisible);
+}, [refresh]);
+```
+
+---
+
 ## Summary Matrix of Edge Case Protections
 
 | Hook                    | Primary Edge Case      | Mitigation Strategy                                    |
@@ -512,3 +607,8 @@ export function useTransactionHistory(
 | `useSorobanEvents`      | Memory Leak / Polling  | Strict `useEffect` timer cleanup & AbortSignal         |
 | `useOfferBook`          | Out-of-Order Pairs     | Input keying and cancellation of inflight queries      |
 | `useTransactionHistory` | Rapid Pagination       | Cursor locking during active `loadMore()` operations   |
+| `useTrustlines`         | Remove With Balance    | Gate removal on a zero balance and no open offers      |
+| `useStellarPayment`     | Stale Sequence Number  | Serialize submits; rebuild XDR on `tx_bad_seq`         |
+| `useStellarPayment`     | Expired Time Bounds    | Build just before signing; rebuild on `tx_too_late`    |
+| `useStellarBalances`    | Network Switch         | Key components by network to drop stale data           |
+| `useSorobanEvents`      | Polling Gap            | Refresh on visibility change; reconcile from state     |

@@ -9,19 +9,20 @@ date: 2026-08-29
 AML monitoring is the ongoing review of activity after a user is onboarded. In a Stellar dApp, the monitor should combine off-chain account context with on-chain signals such as transaction velocity, asset movement, destination patterns, memo usage, and sudden changes in withdrawal behavior.
 
 <Note type="warning">
-  Tune thresholds to your jurisdiction, product, and risk appetite. The examples here are starter patterns, not a substitute for a compliance program.
+  Tune thresholds to your jurisdiction, product, and risk appetite. The examples
+  here are starter patterns, not a substitute for a compliance program.
 </Note>
 
 ## Signals To Watch
 
-| Signal | Example indicator | Why it matters |
-| --- | --- | --- |
-| Velocity | Many withdrawals in a short window | May indicate account takeover or layering |
-| Value spike | Transfer amount exceeds user baseline | Catches sudden behavior changes |
-| Destination churn | New destination for each withdrawal | Can indicate dispersal patterns |
-| Memo anomaly | Required memo missing or unusual | May break attribution or hide intent |
-| KYC mismatch | User risk tier conflicts with activity | Higher-risk users may need stricter limits |
-| Sanctions hit | Destination matches screening source | Requires immediate review or block |
+| Signal            | Example indicator                      | Why it matters                             |
+| ----------------- | -------------------------------------- | ------------------------------------------ |
+| Velocity          | Many withdrawals in a short window     | May indicate account takeover or layering  |
+| Value spike       | Transfer amount exceeds user baseline  | Catches sudden behavior changes            |
+| Destination churn | New destination for each withdrawal    | Can indicate dispersal patterns            |
+| Memo anomaly      | Required memo missing or unusual       | May break attribution or hide intent       |
+| KYC mismatch      | User risk tier conflicts with activity | Higher-risk users may need stricter limits |
+| Sanctions hit     | Destination matches screening source   | Requires immediate review or block         |
 
 Keep raw signals separate from final decisions. A single signal may only require review, while combined signals can justify holding a transaction.
 
@@ -31,8 +32,12 @@ Start with explicit thresholds, then refine them using historical data.
 
 ```ts
 type AmlSignal = {
-  code: "high_velocity" | "large_transfer" | "destination_churn" | "memo_anomaly";
-  severity: "low" | "medium" | "high";
+  code:
+    | 'high_velocity'
+    | 'large_transfer'
+    | 'destination_churn'
+    | 'memo_anomaly';
+  severity: 'low' | 'medium' | 'high';
   reason: string;
 };
 
@@ -41,13 +46,13 @@ type AmlReview = {
   transactionHash?: string;
   score: number;
   signals: AmlSignal[];
-  action: "allow" | "review" | "hold";
+  action: 'allow' | 'review' | 'hold';
 };
 
-export function chooseAmlAction(score: number): AmlReview["action"] {
-  if (score >= 80) return "hold";
-  if (score >= 50) return "review";
-  return "allow";
+export function chooseAmlAction(score: number): AmlReview['action'] {
+  if (score >= 80) return 'hold';
+  if (score >= 50) return 'review';
+  return 'allow';
 }
 ```
 
@@ -68,22 +73,25 @@ export async function reviewTransfer(event: {
 
   if (event.amount > 10000) {
     signals.push({
-      code: "large_transfer",
-      severity: "high",
-      reason: "Transfer exceeds the standard review threshold.",
+      code: 'large_transfer',
+      severity: 'high',
+      reason: 'Transfer exceeds the standard review threshold.',
     });
   }
 
   if (!event.memo) {
     signals.push({
-      code: "memo_anomaly",
-      severity: "medium",
-      reason: "Expected memo was not supplied.",
+      code: 'memo_anomaly',
+      severity: 'medium',
+      reason: 'Expected memo was not supplied.',
     });
   }
 
   const score = signals.reduce((total, signal) => {
-    return total + (signal.severity === "high" ? 40 : signal.severity === "medium" ? 20 : 10);
+    return (
+      total +
+      (signal.severity === 'high' ? 40 : signal.severity === 'medium' ? 20 : 10)
+    );
   }, 0);
 
   return {
@@ -99,14 +107,14 @@ export async function reviewTransfer(event: {
 
 Create a review queue with status, owner, evidence, decision, and timestamps. Analysts should see why a case was created, which signals fired, which transaction or account is affected, and what action is currently blocking the user.
 
-| Queue field | Purpose |
-| --- | --- |
-| Case ID | Stable audit reference |
-| Subject | User, account, wallet, or transaction |
-| Signals | Machine-generated reasons |
-| Evidence | Links to internal records and chain explorers |
-| Decision | Allow, hold, reject, or escalate |
-| Reviewer | Human owner for accountability |
+| Queue field | Purpose                                       |
+| ----------- | --------------------------------------------- |
+| Case ID     | Stable audit reference                        |
+| Subject     | User, account, wallet, or transaction         |
+| Signals     | Machine-generated reasons                     |
+| Evidence    | Links to internal records and chain explorers |
+| Decision    | Allow, hold, reject, or escalate              |
+| Reviewer    | Human owner for accountability                |
 
 ## Operational Checklist
 

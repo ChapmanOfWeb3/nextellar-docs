@@ -31,7 +31,7 @@ Race between Freighter Promise & Timeout Promise
 ## Recommended Retry & Recovery Patterns
 
 1. **Reasonable Timeout Duration**: Set an initial timeout of **45 to 60 seconds**. This gives users enough time to read transaction details and review fee amounts in the popup without rushing.
-2. **Helpful Status Cue**: If 15 seconds have elapsed and the prompt is still pending, display a polite cue: *"Don't see the Freighter popup? Check your browser toolbar."*
+2. **Helpful Status Cue**: If 15 seconds have elapsed and the prompt is still pending, display a polite cue: _"Don't see the Freighter popup? Check your browser toolbar."_
 3. **Promise.race Implementation**: Use `Promise.race` with an explicit timeout rejection to ensure the application always regains control.
 4. **Retry Button**: Always offer an immediate "Retry Signing" action rather than forcing the user to re-fill forms from scratch.
 

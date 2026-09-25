@@ -142,3 +142,75 @@ The explorer uses semantic headings, tables, links, and native `<details>` contr
 - [API Reference](/docs/sdk/api-reference) - Types and utilities
 - [Hooks Reference](/docs/hooks) - Hook-by-hook documentation
 - [Integrations](/docs/integrations) - Stellar ecosystem integrations
+
+## Query examples with the local SDK
+
+Until the hosted API ships, run the same kinds of queries directly through
+the React hooks that ship in your scaffolded project.
+
+### Fetch account balances
+
+```tsx
+import { useStellarBalances } from '@/hooks/useStellarBalances';
+
+const { balances, loading } = useStellarBalances({
+  publicKey: 'GA5Z...',
+});
+```
+
+Expected output (`balances`):
+
+```json
+[
+  { "asset": "native", "balance": "125.5000000" },
+  { "asset": "USDC:GA5Z...", "balance": "40.0000000" }
+]
+```
+
+### Query a DEX order book
+
+```tsx
+import { useOfferBook } from '@/hooks/useOfferBook';
+
+const { bids, asks, midPrice } = useOfferBook({
+  selling: { code: 'XLM', type: 'native' },
+  buying: { code: 'USDC', issuer: 'GA5Z...' },
+});
+```
+
+Expected output:
+
+```json
+{
+  "bids": [{ "price": "0.0998", "amount": "500.0000000" }],
+  "asks": [{ "price": "0.1002", "amount": "300.0000000" }],
+  "midPrice": 0.1
+}
+```
+
+### Paginate transaction history
+
+```tsx
+import { useTransactionHistory } from '@/hooks/useTransactionHistory';
+
+const { transactions } = useTransactionHistory({
+  publicKey: 'GA5Z...',
+  limit: 5,
+});
+```
+
+Expected output (`transactions`, truncated):
+
+```json
+[
+  {
+    "id": "177093...",
+    "type": "payment",
+    "amount": "10.0000000",
+    "createdAt": "2026-08-01T12:00:00Z"
+  }
+]
+```
+
+See [SDK Overview](/docs/sdk/overview) for the full hook reference and
+[useOfferBook](/docs/hooks/use-offer-book) for order book query options.

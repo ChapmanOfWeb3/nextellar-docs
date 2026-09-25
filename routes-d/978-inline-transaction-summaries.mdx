@@ -14,14 +14,14 @@ Pending transactions should tell users what they are about to approve without fo
 
 Show the smallest set of details needed for a user to recognize the action:
 
-| Field | Why it matters |
-| --- | --- |
-| Action | Names the operation, such as payment, trustline, swap, or contract call |
-| Asset and amount | Confirms the value being moved or authorized |
-| Destination or counterparty | Helps users detect the wrong recipient before signing |
-| Network | Prevents testnet/mainnet confusion |
-| Fee | Sets expectations for the cost of submission |
-| Memo | Reveals attached payment context when present |
+| Field                       | Why it matters                                                          |
+| --------------------------- | ----------------------------------------------------------------------- |
+| Action                      | Names the operation, such as payment, trustline, swap, or contract call |
+| Asset and amount            | Confirms the value being moved or authorized                            |
+| Destination or counterparty | Helps users detect the wrong recipient before signing                   |
+| Network                     | Prevents testnet/mainnet confusion                                      |
+| Fee                         | Sets expectations for the cost of submission                            |
+| Memo                        | Reveals attached payment context when present                           |
 
 For contract calls, include the contract alias, method name, and the user-facing effect. Avoid presenting decoded arguments as guaranteed outcomes until the transaction is confirmed.
 
@@ -47,17 +47,13 @@ function summarizePendingPayment(tx: {
   memo?: string;
 }) {
   const shortDestination = `${tx.destination.slice(0, 4)}...${tx.destination.slice(-4)}`;
-  const memo = tx.memo && tx.memo.length > 40
-    ? `${tx.memo.slice(0, 37)}...`
-    : tx.memo;
+  const memo =
+    tx.memo && tx.memo.length > 40 ? `${tx.memo.slice(0, 37)}...` : tx.memo;
 
   return {
     title: `Send ${tx.amount} ${tx.assetCode}`,
     description: `To ${shortDestination} on ${tx.network}`,
-    metadata: [
-      `Fee: ${tx.fee} stroops`,
-      memo ? `Memo: ${memo}` : 'No memo',
-    ],
+    metadata: [`Fee: ${tx.fee} stroops`, memo ? `Memo: ${memo}` : 'No memo'],
   };
 }
 ```
@@ -76,12 +72,12 @@ Render the result near the wallet confirmation button:
 
 Before submission, use tentative language:
 
-| State | Copy pattern |
-| --- | --- |
-| Awaiting signature | "Review and approve this payment in your wallet." |
-| Submitted | "Transaction submitted. Waiting for ledger confirmation." |
-| Confirmed | "Transaction confirmed in ledger 123456." |
-| Failed | "Transaction failed. Review the message and try again." |
+| State              | Copy pattern                                              |
+| ------------------ | --------------------------------------------------------- |
+| Awaiting signature | "Review and approve this payment in your wallet."         |
+| Submitted          | "Transaction submitted. Waiting for ledger confirmation." |
+| Confirmed          | "Transaction confirmed in ledger 123456."                 |
+| Failed             | "Transaction failed. Review the message and try again."   |
 
 ## Related Docs
 
