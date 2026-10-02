@@ -36,7 +36,9 @@
     "check:links": "node scripts/check-links.cjs",
     "audit:frontmatter": "node scripts/audit-frontmatter-comprehensive.cjs"
     "check:links:all": "node scripts/link-checker.mjs",
-    "check:links:external": "node scripts/link-checker.mjs --check-external"
+    "check:links:external": "node scripts/link-checker.mjs --check-external",
+    "check:performance": "node scripts/check-performance-budget.mjs",
+    "lint:vale": "docker run --rm -v \"$PWD:/workspace\" -w /workspace jdkato/vale:latest sync && docker run --rm -v \"$PWD:/workspace\" -w /workspace jdkato/vale:latest --minAlertLevel=warning ."
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx,json,css,md,mdx}": [
