@@ -46,6 +46,9 @@
     "audit:frontmatter": "node scripts/audit-frontmatter-comprehensive.cjs"
     "check:links:all": "node scripts/link-checker.mjs",
     "check:links:external": "node scripts/link-checker.mjs --check-external",
+    "verify:hooks-docs": "node scripts/verify-hooks-docs.mjs",
+    "test:a11y": "playwright test",
+    "test:a11y:headed": "playwright test --headed"
     "check:performance": "node scripts/check-performance-budget.mjs",
     "lint:vale": "docker run --rm -v \"$PWD:/workspace\" -w /workspace jdkato/vale:latest sync && docker run --rm -v \"$PWD:/workspace\" -w /workspace jdkato/vale:latest --minAlertLevel=warning ."
   },
@@ -101,6 +104,7 @@
     "tailwindcss-animated": "^2.0.0"
   },
   "devDependencies": {
+    "@axe-core/react": "^4.10.0",
     "@tailwindcss/postcss": "^4.0.13",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.3.2",
@@ -117,6 +121,8 @@
     "husky": "^9.1.7",
     "jsdom": "^28.1.0",
     "lint-staged": "^15.5.0",
+    "playwright": "^1.49.0",
+    "@playwright/test": "^1.49.0",
     "postcss": "^8.5.3",
     "prettier": "^3.8.1",
     "tailwindcss": "^4.1.3",
