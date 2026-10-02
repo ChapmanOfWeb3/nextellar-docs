@@ -204,7 +204,53 @@ jobs:
       - name: Check code formatting with Prettier
         run: pnpm run format:check
 
-  # Job 5: Sidebar validation
+  # Job 5: MDX lint
+  mdx-lint:
+    name: MDX Lint Check
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.15.4
+
+      - name: Get pnpm cache directory
+        id: pnpm-cache
+        shell: bash
+        run: echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Restore node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-modules-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run MDX lint checks
+        run: pnpm run lint:mdx
+
+  # Job 6: Sidebar validation
   validate-sidebar:
     name: Validate Sidebar Configuration
     runs-on: ubuntu-latest
@@ -250,7 +296,51 @@ jobs:
       - name: Validate sidebar configuration
         run: pnpm run validate:sidebar
 
-  # Job 6: Link validation (requires built docs)
+  # Job 6: Vale prose linting
+  vale:
+    name: Vale Prose Lint
+    runs-on: ubuntu-latest
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync Vale styles
+        run: docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace jdkato/vale:latest sync
+
+      - name: Run Vale on documentation files
+        run: docker run --rm -v "$GITHUB_WORKSPACE:/workspace" -w /workspace jdkato/vale:latest --minAlertLevel=warning .
+
+  # Job 7: Performance budget check
+  performance-budget:
+    name: Performance Budget Check
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9.15.4
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build documentation for budget check
+        run: pnpm run build
+
+      - name: Enforce bundle budget
+        run: pnpm run check:performance
+
+  # Job 8: Link validation (requires built docs)
+  # Job 7: Link validation (requires built docs)
   check-links:
     name: Validate Documentation Links
     runs-on: ubuntu-latest
@@ -455,8 +545,20 @@ jobs:
             echo "❌ Format check failed"
             exit 1
           fi
+          if [ "${{ needs.mdx-lint.result }}" != "success" ]; then
+            echo "❌ MDX lint check failed"
+            exit 1
+          fi
           if [ "${{ needs.validate-sidebar.result }}" != "success" ]; then
             echo "❌ Sidebar validation failed"
+            exit 1
+          fi
+          if [ "${{ needs.vale.result }}" != "success" ]; then
+            echo "❌ Vale prose lint failed"
+            exit 1
+          fi
+          if [ "${{ needs.performance-budget.result }}" != "success" ]; then
+            echo "❌ Performance budget check failed"
             exit 1
           fi
           if [ "${{ needs.check-links.result }}" != "success" ]; then
