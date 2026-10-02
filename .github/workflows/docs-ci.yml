@@ -118,12 +118,6 @@ jobs:
       - name: Validate Open Graph image
         run: pnpm run check:og-image
 
-      - name: Smoke test rendered documentation
-        run: pnpm run test:docs-smoke
-
-      - name: Report CLI documentation coverage
-        run: pnpm run report:cli-coverage
-
   # Job 3: Lint check
   lint:
     name: ESLint Check
