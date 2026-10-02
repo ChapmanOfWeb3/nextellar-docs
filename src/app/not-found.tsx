@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -14,98 +12,6 @@ import {
 import { useState } from 'react';
 
 export default function NotFound() {
-  const pathname = usePathname();
-
-  // Check if this is a docs page that should show "Coming Soon"
-  const isDocsPage = pathname?.startsWith('/docs/');
-  const isComingSoon =
-    isDocsPage &&
-    (pathname?.includes('/components/balance-card') ||
-      pathname?.includes('/components/transaction-list') ||
-      pathname?.includes('/components/payment-form') ||
-      pathname?.includes('/guides/testing') ||
-      pathname?.includes('/guides/smart-contracts') ||
-      pathname?.includes('/examples/nft-marketplace') ||
-      pathname?.includes('/troubleshooting'));
-
-  if (isComingSoon) {
-    return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
-        <style>{`
-          @keyframes float-up {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-          }
-          @keyframes pulse-glow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-          }
-          .animate-float-up { animation: float-up 0.6s ease-out; }
-          .animate-pulse-glow { animation: pulse-glow 2s infinite; }
-        `}</style>
-
-        <div className="w-full max-w-2xl text-center">
-          {/* Coming Soon Badge */}
-          <div className="mb-8 animate-float-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
-              <Clock className="w-4 h-4 text-primary animate-pulse-glow" />
-              <span className="text-sm font-medium text-primary">
-                Coming Soon
-              </span>
-            </div>
-          </div>
-
-          {/* Main Content */}
-          <div
-            className="mb-8 animate-float-up"
-            style={{ animationDelay: '0.1s' }}
-          >
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Rocket className="w-10 h-10 text-primary" />
-              <h1 className="text-4xl font-bold">Under Construction</h1>
-            </div>
-            <p className="text-muted-foreground text-lg mb-2">
-              This documentation page is currently being written.
-            </p>
-            <p className="text-muted-foreground">
-              Check back soon for updates!
-            </p>
-          </div>
-
-          {/* Path Info */}
-          <div
-            className="mb-8 p-4 rounded-lg border border-border bg-card/50 backdrop-blur-sm animate-float-up"
-            style={{ animationDelay: '0.2s' }}
-          >
-            <p className="text-sm text-muted-foreground font-mono">
-              {pathname}
-            </p>
-          </div>
-
-          {/* Action Buttons */}
-          <div
-            className="flex flex-col sm:flex-row gap-3 justify-center animate-float-up"
-            style={{ animationDelay: '0.3s' }}
-          >
-            <Link
-              href="/docs"
-              className="inline-flex items-center justify-center px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:opacity-90 transition-opacity"
-            >
-              Browse Documentation
-            </Link>
-            <Link
-              href="/docs"
-              className="inline-flex items-center justify-center px-6 py-3 border border-border text-foreground rounded-lg font-medium hover:bg-muted transition-colors"
-            >
-              Go Home
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Default 404 page
   return (
     <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
       <style>{`
@@ -259,8 +165,8 @@ export default function NotFound() {
             Browse All Docs
           </Link>
         </div>
-      </div>
-    </div>
+      </body>
+    </html>
   );
 }
 
