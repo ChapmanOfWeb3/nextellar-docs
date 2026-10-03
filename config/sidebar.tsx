@@ -78,6 +78,7 @@ export const sidebarNav: SidebarSection[] = [
       { title: 'Flags & Options', href: '/docs/cli/flags' },
       { title: 'Scaffolding Templates', href: '/docs/cli/templates' },
       { title: 'Template Comparison', href: '/docs/cli/template-comparison' },
+      { title: 'JavaScript Default Template', href: '/docs/cli/js-template' },
       {
         title: 'Verified Template Matrix',
         href: '/docs/cli/verified-template-matrix',
@@ -405,8 +406,12 @@ export const sidebarNav: SidebarSection[] = [
         href: '/docs/guides/horizon-vs-soroban-rpc',
       },
       {
-        title: 'Internationalization',
-        href: '/docs/guides/internationalization',
+        title: 'Accessibility Guide',
+        href: '/docs/guides/accessibility-guide',
+      },
+      {
+        title: 'Internationalization Guide',
+        href: '/docs/guides/internationalization-guide',
       },
     ],
   },
