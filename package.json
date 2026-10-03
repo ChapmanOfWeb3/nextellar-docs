@@ -42,6 +42,8 @@
     "generate:cli-docs": "npx nextellar --help | node scripts/generate-cli-docs.cjs --output docs/cli/commands.mdx",
     "test:validation": "vitest run scripts/validate-search-index.test.ts",
     "validate:sidebar": "node scripts/validate-sidebar.cjs",
+    "validate:heading-hierarchy": "node scripts/validate-heading-hierarchy.mjs",
+    "fix:heading-hierarchy": "node scripts/fix-heading-hierarchy.mjs",
     "check:links": "node scripts/check-links.cjs",
     "audit:frontmatter": "node scripts/audit-frontmatter-comprehensive.cjs"
     "check:links:all": "node scripts/link-checker.mjs",
