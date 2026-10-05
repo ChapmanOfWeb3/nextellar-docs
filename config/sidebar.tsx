@@ -78,6 +78,7 @@ export const sidebarNav: SidebarSection[] = [
       { title: 'Flags & Options', href: '/docs/cli/flags' },
       { title: 'Scaffolding Templates', href: '/docs/cli/templates' },
       { title: 'Template Comparison', href: '/docs/cli/template-comparison' },
+      { title: 'JavaScript Default Template', href: '/docs/cli/js-template' },
       {
         title: 'Verified Template Matrix',
         href: '/docs/cli/verified-template-matrix',
@@ -242,8 +243,6 @@ export const sidebarNav: SidebarSection[] = [
       },
       { title: 'Documentation Roadmap', href: '/docs/guides/roadmap' },
       {
-        title: 'Documentation Roadmap',
-        href: '/docs/guides/roadmap',
         title: 'Security Hardening',
         href: '/docs/guides/security-hardening',
       },
@@ -407,12 +406,12 @@ export const sidebarNav: SidebarSection[] = [
         href: '/docs/guides/horizon-vs-soroban-rpc',
       },
       {
-        title: 'Security Policy',
-        href: '/docs/guides/security-policy',
+        title: 'Accessibility Guide',
+        href: '/docs/guides/accessibility-guide',
       },
       {
-        title: 'Internationalization',
-        href: '/docs/guides/internationalization',
+        title: 'Internationalization Guide',
+        href: '/docs/guides/internationalization-guide',
       },
     ],
   },
@@ -426,8 +425,8 @@ export const sidebarNav: SidebarSection[] = [
     defaultOpen: false,
     pages: [
       {
-        title: 'WalletConnectButton',
-        href: '/docs/components/wallet-connect-button',
+        title: 'ConnectWalletButton',
+        href: '/docs/components/connect-wallet-button',
       },
       { title: 'useWindowSize', href: '/docs/components/use-window-size' },
     ],
